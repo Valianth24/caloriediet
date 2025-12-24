@@ -717,6 +717,63 @@ async def logout(request: Request, current_user: Optional[User] = Depends(get_cu
   return resp
 
 
+@api_router.delete("/auth/account")
+async def delete_account(request: Request, current_user: Optional[User] = Depends(get_current_user)):
+  """
+  Delete user account and all associated data.
+  This is a permanent action and cannot be undone.
+  """
+  if not current_user:
+    raise HTTPException(status_code=401, detail="Not authenticated")
+
+  user_id = current_user.user_id
+  
+  try:
+    # Delete all user data from database
+    if mongo_db:
+      # Delete user's meals
+      await mongo_db.meals.delete_many({"user_id": user_id})
+      # Delete user's water entries
+      await mongo_db.water.delete_many({"user_id": user_id})
+      # Delete user's steps
+      await mongo_db.steps.delete_many({"user_id": user_id})
+      # Delete user's vitamins
+      await mongo_db.vitamins.delete_many({"user_id": user_id})
+      # Delete user's sessions
+      await mongo_db.user_sessions.delete_many({"user_id": user_id})
+      # Delete user account
+      await mongo_db.users.delete_one({"user_id": user_id})
+    else:
+      # Memory store cleanup
+      if user_id in MEM_USERS:
+        email = MEM_USERS[user_id].get("email")
+        del MEM_USERS[user_id]
+        if email and email in MEM_USERS_BY_EMAIL:
+          del MEM_USERS_BY_EMAIL[email]
+      if user_id in MEM_MEALS:
+        del MEM_MEALS[user_id]
+      if user_id in MEM_WATER:
+        del MEM_WATER[user_id]
+      if user_id in MEM_STEPS:
+        del MEM_STEPS[user_id]
+      if user_id in MEM_VITAMINS:
+        del MEM_VITAMINS[user_id]
+      # Delete sessions
+      tokens_to_delete = [k for k, v in MEM_SESSIONS.items() if v.get("user_id") == user_id]
+      for token in tokens_to_delete:
+        del MEM_SESSIONS[token]
+    
+    logger.info(f"Account deleted: {user_id}")
+    
+    resp = JSONResponse(content={"message": "Account deleted successfully"})
+    resp.delete_cookie("session_token", path="/")
+    return resp
+    
+  except Exception as e:
+    logger.error(f"Error deleting account {user_id}: {e}")
+    raise HTTPException(status_code=500, detail="Failed to delete account")
+
+
 @api_router.post("/auth/register", response_model=SessionDataResponse)
 async def register(request: Request, data: RegisterRequest):
   existing = await store_get_user_by_email(data.email)
