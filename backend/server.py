@@ -137,15 +137,27 @@ def health():
 
 @api_router.get("/debug/storage-status")
 async def storage_status():
-  """Check database connection status and storage type."""
-  return {
-    "storage_type": "mongodb" if mongo_db else "memory",
-    "mongodb_connected": mongo_db is not None,
-    "mongo_url_configured": bool(MONGO_URL),
-    "warning": None if mongo_db else "Using in-memory storage - data will be lost on restart!",
-    "hint": "Set MONGO_URL environment variable for persistent storage" if not mongo_db else None,
-    "data_retention_days": DATA_RETENTION_DAYS,
-  }
+    """Check MongoDB connection status and configuration."""
+    # Test actual connection
+    actual_connected = False
+    if mongo_db:
+        try:
+            # Ping the database to verify connection
+            await mongo_db.command("ping")
+            actual_connected = True
+        except Exception as e:
+            logger.error(f"MongoDB ping failed: {e}")
+            actual_connected = False
+    
+    return {
+        "mongoConfigured": bool(MONGO_URL),
+        "mongoConnected": actual_connected,
+        "dbName": DB_NAME if MONGO_URL else None,
+        "mongoHost": MONGO_HOST,
+        "collectionsUsed": MONGO_COLLECTIONS,
+        "dataRetentionDays": DATA_RETENTION_DAYS if 'DATA_RETENTION_DAYS' in globals() else 35,
+        "status": "ready" if actual_connected else "not_connected",
+    }
 
 
 # -------------------------
