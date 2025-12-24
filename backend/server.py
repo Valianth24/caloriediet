@@ -428,7 +428,7 @@ async def get_session_data(request: Request):
   }
   
   # Store session
-  if mongo_db:
+  if mongo_db is not None:
     await mongo_db.user_sessions.insert_one(session_doc)
   else:
     memory_sessions[session_token] = session_doc
