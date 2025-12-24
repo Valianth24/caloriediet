@@ -1626,22 +1626,18 @@ class AddWaterRequest(BaseModel):
 
 
 async def get_user_water(user_id: str, date: Optional[str] = None) -> List[Dict[str, Any]]:
-  target_date = date or today_str()
-  if mongo_db:
+    """Get user water entries from MongoDB."""
+    if not mongo_db:
+        return []
+    target_date = date or today_str()
     cursor = mongo_db.water.find({"user_id": user_id, "date": target_date}, {"_id": 0})
     return await cursor.to_list(length=100)
-  else:
-    user_water = MEM_WATER.get(user_id, [])
-    return [w for w in user_water if w.get("date") == target_date]
 
 
 async def add_user_water(user_id: str, water_data: Dict[str, Any]):
-  if mongo_db:
+    """Add water entry to MongoDB."""
+    require_mongo()
     await mongo_db.water.insert_one(water_data)
-  else:
-    if user_id not in MEM_WATER:
-      MEM_WATER[user_id] = []
-    MEM_WATER[user_id].append(water_data)
 
 
 @api_router.post("/water/add")
