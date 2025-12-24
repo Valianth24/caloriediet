@@ -1321,7 +1321,9 @@ async def analyze_food(request_data: AnalyzeFoodRequest, current_user: Optional[
     if not current_user:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
-    if not OPENAI_API_KEY:
+    api_key = get_openai_api_key()
+    if not api_key:
+        logger.error("OpenAI API key missing - check OPENAI_KEY environment variable")
         raise HTTPException(status_code=503, detail="OpenAI API key not configured. Set OPENAI_KEY environment variable.")
     
     try:
