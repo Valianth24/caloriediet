@@ -494,6 +494,9 @@ MEM_WATER: Dict[str, List[Dict[str, Any]]] = {}     # user_id -> [water entries]
 MEM_STEPS: Dict[str, Dict[str, Any]] = {}           # user_id -> {date: steps_data}
 MEM_MEALS: Dict[str, List[Dict[str, Any]]] = {}     # user_id -> [meal list]
 
+# Data retention policy
+DATA_RETENTION_DAYS = 35  # Days to keep data after logout
+
 async def store_create_user(user_doc: Dict[str, Any]):
   if mongo_db:
     await mongo_db.users.insert_one(user_doc)
@@ -524,6 +527,130 @@ async def store_update_user(user_id: str, update: Dict[str, Any]):
     if user_id in MEM_USERS:
       MEM_USERS[user_id].update(update)
 
+async def store_mark_user_for_deletion(user_id: str):
+  """Mark user for deletion after DATA_RETENTION_DAYS days."""
+  deletion_date = now_utc() + timedelta(days=DATA_RETENTION_DAYS)
+  update = {
+    "scheduled_deletion_at": deletion_date.isoformat(),
+    "logout_at": now_utc().isoformat(),
+  }
+  await store_update_user(user_id, update)
+  logger.info(f"User {user_id} marked for deletion at {deletion_date.isoformat()}")
+
+async def store_cancel_user_deletion(user_id: str):
+  """Cancel scheduled deletion when user logs back in."""
+  if mongo_db:
+    await mongo_db.users.update_one(
+      {"user_id": user_id}, 
+      {"$unset": {"scheduled_deletion_at": "", "logout_at": ""}}
+    )
+  else:
+    if user_id in MEM_USERS:
+      MEM_USERS[user_id].pop("scheduled_deletion_at", None)
+      MEM_USERS[user_id].pop("logout_at", None)
+  logger.info(f"Deletion cancelled for user {user_id}")
+
+async def store_delete_user_data(user_id: str):
+  """Permanently delete all user data."""
+  if mongo_db:
+    # Delete all user data
+    await mongo_db.meals.delete_many({"user_id": user_id})
+    await mongo_db.water.delete_many({"user_id": user_id})
+    await mongo_db.steps.delete_many({"user_id": user_id})
+    await mongo_db.vitamins.delete_many({"user_id": user_id})
+    await mongo_db.user_sessions.delete_many({"user_id": user_id})
+    # Get user email before deleting
+    user = await mongo_db.users.find_one({"user_id": user_id})
+    await mongo_db.users.delete_one({"user_id": user_id})
+    logger.info(f"Permanently deleted all data for user {user_id}")
+  else:
+    # Memory store cleanup
+    if user_id in MEM_USERS:
+      email = MEM_USERS[user_id].get("email")
+      del MEM_USERS[user_id]
+      if email and email in MEM_USERS_BY_EMAIL:
+        del MEM_USERS_BY_EMAIL[email]
+    MEM_MEALS.pop(user_id, None)
+    MEM_WATER.pop(user_id, None)
+    MEM_STEPS.pop(user_id, None)
+    MEM_VITAMINS.pop(user_id, None)
+    # Delete sessions
+    tokens_to_delete = [k for k, v in MEM_SESSIONS.items() if v.get("user_id") == user_id]
+    for token in tokens_to_delete:
+      del MEM_SESSIONS[token]
+
+async def cleanup_expired_users():
+  """Delete users whose scheduled_deletion_at has passed (non-premium or expired premium)."""
+  now = now_utc()
+  deleted_count = 0
+  
+  if mongo_db:
+    # Find users scheduled for deletion
+    cursor = mongo_db.users.find({
+      "scheduled_deletion_at": {"$exists": True}
+    })
+    
+    async for user in cursor:
+      deletion_str = user.get("scheduled_deletion_at")
+      if not deletion_str:
+        continue
+        
+      try:
+        deletion_date = datetime.fromisoformat(deletion_str.replace('Z', '+00:00'))
+        if deletion_date.tzinfo is None:
+          deletion_date = deletion_date.replace(tzinfo=timezone.utc)
+      except:
+        continue
+      
+      # Check if deletion date has passed
+      if deletion_date < now:
+        # Check if premium user with active subscription
+        is_premium = user.get("is_premium", False)
+        premium_expires = user.get("premium_expires_at")
+        
+        if is_premium and premium_expires:
+          try:
+            exp_date = datetime.fromisoformat(str(premium_expires).replace('Z', '+00:00'))
+            if exp_date.tzinfo is None:
+              exp_date = exp_date.replace(tzinfo=timezone.utc)
+            # If premium is still active, don't delete
+            if exp_date > now:
+              continue
+          except:
+            pass
+        
+        # Delete user data
+        await store_delete_user_data(user["user_id"])
+        deleted_count += 1
+  else:
+    # Memory store cleanup
+    users_to_delete = []
+    for user_id, user in MEM_USERS.items():
+      deletion_str = user.get("scheduled_deletion_at")
+      if not deletion_str:
+        continue
+      
+      try:
+        deletion_date = datetime.fromisoformat(deletion_str.replace('Z', '+00:00'))
+        if deletion_date.tzinfo is None:
+          deletion_date = deletion_date.replace(tzinfo=timezone.utc)
+      except:
+        continue
+      
+      if deletion_date < now:
+        is_premium = user.get("is_premium", False)
+        if not is_premium:
+          users_to_delete.append(user_id)
+    
+    for user_id in users_to_delete:
+      await store_delete_user_data(user_id)
+      deleted_count += 1
+  
+  if deleted_count > 0:
+    logger.info(f"Cleaned up {deleted_count} expired user accounts")
+  
+  return deleted_count
+
 async def store_create_session(user_id: str, session_token: str, days: int = 30):
   session_doc = {
     "user_id": user_id,
@@ -535,6 +662,9 @@ async def store_create_session(user_id: str, session_token: str, days: int = 30)
     await mongo_db.user_sessions.insert_one(session_doc)
   else:
     MEM_SESSIONS[session_token] = session_doc
+  
+  # Cancel any scheduled deletion when user logs in
+  await store_cancel_user_deletion(user_id)
   logger.info(f"Session created for user {user_id}, expires in {days} days")
 
 async def store_get_session(session_token: str) -> Optional[Dict[str, Any]]:
