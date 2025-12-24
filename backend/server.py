@@ -2032,7 +2032,7 @@ def validate_email(email: str) -> bool:
 
 async def store_deletion_request(request_data: dict):
   """Store deletion request in MongoDB or fallback to file."""
-  if mongo_db:
+  if mongo_db is not None:
     await mongo_db.deletion_requests.insert_one(request_data)
   else:
     # Fallback to JSONL file
