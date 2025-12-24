@@ -76,6 +76,28 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 # -------------------------
+# STARTUP EVENT - Run cleanup on server start
+# -------------------------
+@app.on_event("startup")
+async def startup_event():
+  """Run cleanup tasks on server startup."""
+  logger.info("Starting server...")
+  
+  # Log storage type
+  if mongo_db:
+    logger.info(f"Using MongoDB: {DB_NAME}")
+  else:
+    logger.warning("Using in-memory storage - data will be lost on restart!")
+  
+  # Run cleanup for expired users (in background)
+  try:
+    deleted = await cleanup_expired_users()
+    if deleted > 0:
+      logger.info(f"Startup cleanup: deleted {deleted} expired user accounts")
+  except Exception as e:
+    logger.error(f"Startup cleanup error: {e}")
+
+# -------------------------
 # HEALTH (Render)
 # -------------------------
 @app.get("/health")
@@ -91,6 +113,7 @@ async def storage_status():
     "mongo_url_configured": bool(MONGO_URL),
     "warning": None if mongo_db else "Using in-memory storage - data will be lost on restart!",
     "hint": "Set MONGO_URL environment variable for persistent storage" if not mongo_db else None,
+    "data_retention_days": DATA_RETENTION_DAYS,
   }
 
 
