@@ -374,12 +374,12 @@ class CalorieDietAPITester:
             
             if response.status_code == 200:
                 data = response.json()
-                if "total_steps" in data:
+                if "steps" in data and "source" in data and "date" in data:
                     self.log_test("Get Today Steps", True, 
-                                f"Today's steps: {data['total_steps']}", data)
+                                f"Today's steps: {data['steps']} (source: {data['source']})", data)
                 else:
                     self.log_test("Get Today Steps", False, 
-                                "Invalid response format", data)
+                                "Invalid response format - missing required fields", data)
             else:
                 self.log_test("Get Today Steps", False, 
                             f"HTTP {response.status_code}: {response.text}")
