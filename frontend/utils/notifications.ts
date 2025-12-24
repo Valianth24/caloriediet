@@ -266,3 +266,48 @@ export const getScheduledCount = async (): Promise<number> => {
     return 0;
   }
 };
+
+// Send immediate test notification (for debugging)
+export const sendTestNotification = async (title: string, body: string): Promise<boolean> => {
+  if (!areNotificationsSupported()) {
+    Alert.alert('Bildirim Hatası', 'Bildirimler bu ortamda desteklenmiyor.');
+    return false;
+  }
+  
+  const Notifications = getNotifications();
+  if (!Notifications) return false;
+
+  try {
+    await ensureAndroidChannel();
+    
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title,
+        body,
+        sound: true,
+        priority: 'high',
+      },
+      trigger: null, // Immediate notification
+    });
+    
+    console.log('[Notifications] Test notification sent');
+    return true;
+  } catch (error) {
+    console.log('[Notifications] Test notification error:', error);
+    return false;
+  }
+};
+
+// Get all scheduled notifications (for debugging)
+export const getScheduledNotifications = async (): Promise<any[]> => {
+  if (!areNotificationsSupported()) return [];
+  
+  const Notifications = getNotifications();
+  if (!Notifications) return [];
+
+  try {
+    return await Notifications.getAllScheduledNotificationsAsync();
+  } catch {
+    return [];
+  }
+};
