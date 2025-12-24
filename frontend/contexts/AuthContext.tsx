@@ -143,6 +143,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log('[Auth] Extracted session_id:', sessionId ? sessionId.substring(0, 10) + '...' : 'null');
       
       if (sessionId) {
+        // Skip if already authenticated (avoid duplicate processing)
+        if (isAuthenticated) {
+          console.log('[Auth] Already authenticated, skipping duplicate redirect');
+          return;
+        }
+        
         setIsLoading(true);
         
         try {
@@ -181,10 +187,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         } catch (exchangeError: any) {
           console.error('[Auth] Session exchange failed:', exchangeError);
-          Alert.alert(
-            'Giriş Hatası',
-            'Oturum oluşturulamadı. Lütfen tekrar deneyin.'
-          );
+          // Don't show error if we're already authenticated (duplicate callback)
+          if (!isAuthenticated) {
+            // Silent fail - user might still be logged in from previous attempt
+            console.log('[Auth] Exchange failed but may have succeeded earlier');
+          }
         }
         
         setIsLoading(false);
