@@ -651,7 +651,7 @@ async def exchange_session(request: Request):
       })
     
     session_token = f"sess_{secrets.token_hex(16)}"
-    await store_create_session(user_id, session_token, days=7)
+    await store_create_session(user_id, session_token, days=30)
     
     resp = JSONResponse(content={
       "user_id": user_id,
