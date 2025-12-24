@@ -865,11 +865,38 @@ async def logout(request: Request, current_user: Optional[User] = Depends(get_cu
   if not current_user:
     raise HTTPException(status_code=401, detail="Not authenticated")
 
+  user_id = current_user.user_id
+  is_premium = current_user.is_premium
+  
+  # Delete current session
   session_token = request.cookies.get("session_token")
+  if not session_token:
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+      session_token = auth_header.split(" ", 1)[1].strip()
+  
   if session_token:
     await store_delete_session(session_token)
-
-  resp = JSONResponse(content={"message": "Logged out"})
+  
+  # Mark user for deletion after DATA_RETENTION_DAYS days (unless premium)
+  deletion_date = now_utc() + timedelta(days=DATA_RETENTION_DAYS)
+  await store_mark_user_for_deletion(user_id)
+  
+  # Prepare response message
+  if is_premium:
+    message = f"Çıkış yapıldı. Premium üyeliğiniz devam ettiği sürece verileriniz korunacaktır. Üyelik iptalinden {DATA_RETENTION_DAYS} gün sonra verileriniz silinecektir."
+    message_en = f"Logged out. Your data will be preserved while your premium subscription is active. Data will be deleted {DATA_RETENTION_DAYS} days after subscription ends."
+  else:
+    message = f"Çıkış yapıldı. {DATA_RETENTION_DAYS} gün içinde tekrar giriş yapmazsanız verileriniz kalıcı olarak silinecektir."
+    message_en = f"Logged out. If you don't log in again within {DATA_RETENTION_DAYS} days, your data will be permanently deleted."
+  
+  resp = JSONResponse(content={
+    "message": message,
+    "message_en": message_en,
+    "data_retention_days": DATA_RETENTION_DAYS,
+    "scheduled_deletion_date": deletion_date.isoformat(),
+    "is_premium": is_premium,
+  })
   resp.delete_cookie("session_token", path="/")
   return resp
 
@@ -877,7 +904,7 @@ async def logout(request: Request, current_user: Optional[User] = Depends(get_cu
 @api_router.delete("/auth/account")
 async def delete_account(request: Request, current_user: Optional[User] = Depends(get_current_user)):
   """
-  Delete user account and all associated data.
+  Delete user account and all associated data immediately.
   This is a permanent action and cannot be undone.
   """
   if not current_user:
@@ -886,41 +913,10 @@ async def delete_account(request: Request, current_user: Optional[User] = Depend
   user_id = current_user.user_id
   
   try:
-    # Delete all user data from database
-    if mongo_db:
-      # Delete user's meals
-      await mongo_db.meals.delete_many({"user_id": user_id})
-      # Delete user's water entries
-      await mongo_db.water.delete_many({"user_id": user_id})
-      # Delete user's steps
-      await mongo_db.steps.delete_many({"user_id": user_id})
-      # Delete user's vitamins
-      await mongo_db.vitamins.delete_many({"user_id": user_id})
-      # Delete user's sessions
-      await mongo_db.user_sessions.delete_many({"user_id": user_id})
-      # Delete user account
-      await mongo_db.users.delete_one({"user_id": user_id})
-    else:
-      # Memory store cleanup
-      if user_id in MEM_USERS:
-        email = MEM_USERS[user_id].get("email")
-        del MEM_USERS[user_id]
-        if email and email in MEM_USERS_BY_EMAIL:
-          del MEM_USERS_BY_EMAIL[email]
-      if user_id in MEM_MEALS:
-        del MEM_MEALS[user_id]
-      if user_id in MEM_WATER:
-        del MEM_WATER[user_id]
-      if user_id in MEM_STEPS:
-        del MEM_STEPS[user_id]
-      if user_id in MEM_VITAMINS:
-        del MEM_VITAMINS[user_id]
-      # Delete sessions
-      tokens_to_delete = [k for k, v in MEM_SESSIONS.items() if v.get("user_id") == user_id]
-      for token in tokens_to_delete:
-        del MEM_SESSIONS[token]
+    # Delete all user data immediately
+    await store_delete_user_data(user_id)
     
-    logger.info(f"Account deleted: {user_id}")
+    logger.info(f"Account deleted immediately: {user_id}")
     
     resp = JSONResponse(content={"message": "Account deleted successfully"})
     resp.delete_cookie("session_token", path="/")
