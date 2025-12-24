@@ -73,10 +73,20 @@ export default function WaterDetailScreen() {
           content: {
             title: '💧 Su İçme Zamanı!',
             body: 'Sağlığınız için su içmeyi unutmayın.',
-            sound: 'default',
+            sound: true,
           },
         });
-        Alert.alert('Başarılı', reminderEnabled ? 'Hatırlatıcı ayarları kaydedildi!' : 'Hatırlatıcılar kapatıldı.');
+        
+        // Show scheduled notifications count for debugging
+        const scheduled = await getScheduledNotifications();
+        const waterNotifications = scheduled.filter(n => n.content?.title?.includes('Su'));
+        
+        Alert.alert(
+          'Başarılı', 
+          reminderEnabled 
+            ? `Hatırlatıcı ayarları kaydedildi! ${waterNotifications.length} bildirim planlandı.` 
+            : 'Hatırlatıcılar kapatıldı.'
+        );
       } else {
         await clearReminderNotifications('water');
         Alert.alert('Bildirim İzni', 'Bildirim izni verilmedi. Ayarlardan açabilirsiniz.');
@@ -86,6 +96,16 @@ export default function WaterDetailScreen() {
     } catch (error) {
       console.error('Error saving reminder settings:', error);
       Alert.alert('Hata', 'Hatırlatıcı ayarları kaydedilemedi.');
+    }
+  };
+
+  const handleTestNotification = async () => {
+    const success = await sendTestNotification(
+      '💧 Test Bildirimi',
+      'Bu bir test bildirimidir. Ses ve titreşim çalışıyor mu?'
+    );
+    if (success) {
+      Alert.alert('Gönderildi', 'Test bildirimi gönderildi!');
     }
   };
 
