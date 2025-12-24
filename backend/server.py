@@ -20,13 +20,17 @@ from pydantic import BaseModel, Field, field_validator
 import re
 import json
 
-# MongoDB Configuration (REQUIRED - no memory fallback)
-MONGO_URL = os.getenv("MONGO_URL", "").strip()
-DB_NAME = os.getenv("DB_NAME", "caloriediet").strip()
+# Load .env FIRST before reading any env vars
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / ".env")
 
 # Configure logging early
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# MongoDB Configuration (REQUIRED - no memory fallback)
+MONGO_URL = os.getenv("MONGO_URL", "").strip()
+DB_NAME = os.getenv("DB_NAME", "caloriediet").strip()
 
 # Parse MongoDB host for debug info
 def parse_mongo_host(url: str) -> str:
