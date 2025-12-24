@@ -78,13 +78,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           } else {
             setNeedsOnboarding(false);
           }
+          console.log('[Auth] Session restored for:', userData.email || userData.user_id);
+        } else {
+          // Token exists but user data not found - session expired or user deleted
+          console.log('[Auth] Session invalid - clearing token');
+          await AsyncStorage.removeItem('session_token');
+          setAuthToken(null);
+          setIsAuthenticated(false);
         }
       }
       // No token = show login screen (don't auto guest login)
-    } catch (error) {
-      console.error('Error checking session:', error);
+    } catch (error: any) {
+      console.error('[Auth] Error checking session:', error);
+      
+      // Check if it's a 401 error (session expired)
+      if (error?.response?.status === 401 || error?.message?.includes('401')) {
+        console.log('[Auth] Session expired - clearing token');
+      }
+      
       await AsyncStorage.removeItem('session_token');
       setAuthToken(null);
+      setIsAuthenticated(false);
       // Show login screen on error
     } finally {
       setIsLoading(false);
