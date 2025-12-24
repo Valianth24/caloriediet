@@ -115,10 +115,27 @@ export default function ProfileScreen() {
   const handleLogout = async () => {
     Alert.alert(
       t('logout'),
-      t('logoutConfirm'),
+      t('logoutConfirmWithDataWarning') || 'Çıkış yapmak istediğinizden emin misiniz?\n\n⚠️ 35 gün içinde tekrar giriş yapmazsanız tüm verileriniz kalıcı olarak silinecektir.',
       [
         { text: t('cancel'), style: 'cancel' },
-        { text: t('logout'), style: 'destructive', onPress: logout },
+        { 
+          text: t('logout'), 
+          style: 'destructive', 
+          onPress: async () => {
+            const response = await logout();
+            
+            // Show data retention warning after logout
+            if (response?.data_retention_days) {
+              setTimeout(() => {
+                Alert.alert(
+                  t('logoutSuccess') || 'Çıkış Yapıldı',
+                  response.message || `${response.data_retention_days} gün içinde tekrar giriş yapmazsanız verileriniz silinecektir.`,
+                  [{ text: 'Tamam' }]
+                );
+              }, 500);
+            }
+          }
+        },
       ]
     );
   };
