@@ -116,7 +116,7 @@ async def startup_event():
   logger.info("Starting server...")
   
   # Log storage type
-  if mongo_db:
+  if mongo_db is not None:
     logger.info(f"Using MongoDB: {DB_NAME}")
   else:
     logger.warning("Using in-memory storage - data will be lost on restart!")
