@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Backend URL configuration with fallbacks
 const BACKEND_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL 
@@ -6,6 +7,13 @@ const BACKEND_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL
   || '';
 
 const API_URL = BACKEND_URL ? `${BACKEND_URL}/api` : '/api';
+
+// Callback for handling auth failures (set by AuthContext)
+let onAuthFailure: (() => void) | null = null;
+
+export const setOnAuthFailure = (callback: () => void) => {
+  onAuthFailure = callback;
+};
 
 // Debug: Log API configuration on load
 if (__DEV__) {
