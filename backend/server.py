@@ -548,7 +548,7 @@ def calculate_calorie_goal(height: float, weight: float, age: int, gender: str, 
 
 def require_mongo():
     """Raise HTTPException if MongoDB is not configured."""
-    if not mongo_db:
+    if mongo_db is None:
         raise HTTPException(
             status_code=500,
             detail="Database not configured. Please set MONGO_URL environment variable."
@@ -570,7 +570,7 @@ async def store_create_user(user_doc: Dict[str, Any]):
 
 async def store_get_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
     """Get user by ID from MongoDB."""
-    if not mongo_db:
+    if mongo_db is None:
         return None
     return await mongo_db.users.find_one({"user_id": user_id}, {"_id": 0})
 
@@ -580,7 +580,7 @@ async def store_get_user(user_id: str) -> Optional[Dict[str, Any]]:
 
 async def store_get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
     """Get user by email from MongoDB."""
-    if not mongo_db:
+    if mongo_db is None:
         return None
     return await mongo_db.users.find_one({"email": email}, {"_id": 0})
 
@@ -694,7 +694,7 @@ async def store_create_session(user_id: str, session_token: str, days: int = 30)
 
 async def store_get_session(session_token: str) -> Optional[Dict[str, Any]]:
     """Get session from MongoDB."""
-    if not mongo_db:
+    if mongo_db is None:
         return None
     return await mongo_db.user_sessions.find_one({"session_token": session_token}, {"_id": 0})
 
@@ -1213,7 +1213,7 @@ class AddMealRequest(BaseModel):
 
 async def get_user_meals(user_id: str, date: Optional[str] = None) -> List[Dict[str, Any]]:
     """Get user meals from MongoDB."""
-    if not mongo_db:
+    if mongo_db is None:
         return []
     target_date = date or today_str()
     cursor = mongo_db.meals.find({"user_id": user_id, "date": target_date}, {"_id": 0})
@@ -1628,7 +1628,7 @@ class AddWaterRequest(BaseModel):
 
 async def get_user_water(user_id: str, date: Optional[str] = None) -> List[Dict[str, Any]]:
     """Get user water entries from MongoDB."""
-    if not mongo_db:
+    if mongo_db is None:
         return []
     target_date = date or today_str()
     cursor = mongo_db.water.find({"user_id": user_id, "date": target_date}, {"_id": 0})
@@ -1703,7 +1703,7 @@ class ManualStepsRequest(BaseModel):
 
 async def get_user_steps(user_id: str, date: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """Get user steps from MongoDB."""
-    if not mongo_db:
+    if mongo_db is None:
         return None
     target_date = date or today_str()
     return await mongo_db.steps.find_one({"user_id": user_id, "date": target_date}, {"_id": 0})
@@ -1794,7 +1794,7 @@ class ToggleVitaminRequest(BaseModel):
 
 async def get_user_vitamins(user_id: str) -> List[Dict[str, Any]]:
     """Get user vitamins from MongoDB."""
-    if not mongo_db:
+    if mongo_db is None:
         return []
     today = today_str()
     cursor = mongo_db.vitamins.find({"user_id": user_id}, {"_id": 0})
