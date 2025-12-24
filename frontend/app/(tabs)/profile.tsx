@@ -134,30 +134,31 @@ export default function ProfileScreen() {
           style: 'destructive', 
           onPress: async () => {
             try {
-              // Call delete account API
               const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
               const token = await AsyncStorage.getItem('session_token');
               
-              // For now, we redirect to the web deletion page
-              // This complies with Google Play requirements
-              const deleteUrl = `${API_BASE_URL}/account-deletion`;
+              const response = await fetch(`${API_BASE_URL}/api/auth/account`, {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+                },
+              });
               
-              Alert.alert(
-                t('deleteAccount') || 'Hesabı Sil',
-                t('deleteAccountRedirect') || 'Hesabınızı silmek için web sayfasına yönlendirileceksiniz.',
-                [
-                  { text: t('cancel'), style: 'cancel' },
-                  { 
-                    text: t('continue') || 'Devam Et', 
-                    onPress: async () => {
-                      // Open deletion page in browser
-                      const { Linking } = require('react-native');
-                      await Linking.openURL(deleteUrl);
-                    }
-                  },
-                ]
-              );
-            } catch (error) {
+              if (response.ok) {
+                // Clear local storage
+                await AsyncStorage.multiRemove(['session_token', 'app_theme', 'is_premium', 'user_data', 'first_launch']);
+                
+                Alert.alert(
+                  t('success') || 'Başarılı',
+                  t('accountDeleted') || 'Hesabınız başarıyla silindi.',
+                  [{ text: 'Tamam', onPress: logout }]
+                );
+              } else {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Delete failed');
+              }
+            } catch (error: any) {
               console.error('Delete account error:', error);
               Alert.alert(t('error'), t('deleteAccountError') || 'Hesap silinemedi. Lütfen tekrar deneyin.');
             }
