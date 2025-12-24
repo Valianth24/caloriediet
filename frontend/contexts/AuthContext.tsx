@@ -335,12 +335,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Logout - Only ends session, keeps account data on server
-  const logout = async () => {
+  // Logout - Marks user for deletion after 35 days
+  const logout = async (): Promise<{ message?: string; data_retention_days?: number } | null> => {
     console.log('[Auth] Logout initiated');
+    let logoutResponse: any = null;
+    
     try {
-      // Call backend logout (just invalidates session, doesn't delete account)
-      apiLogout().catch((err) => console.log('[Auth] Backend logout error (ignored):', err));
+      // Call backend logout - this marks user for deletion
+      logoutResponse = await apiLogout();
+      console.log('[Auth] Backend logout response:', logoutResponse);
     } catch (error) {
       console.error('[Auth] Error during logout API call:', error);
     }
@@ -372,6 +375,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
       window.location.href = '/';
     }
+    
+    return logoutResponse;
   };
 
   const handleSetUser = (userData: any) => {
