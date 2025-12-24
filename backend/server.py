@@ -624,7 +624,7 @@ async def store_delete_user_data(user_id: str):
 
 async def cleanup_expired_users():
     """Delete users whose scheduled_deletion_at has passed (non-premium or expired premium)."""
-    if not mongo_db:
+    if mongo_db is None:
         logger.warning("Cleanup skipped - MongoDB not configured")
         return 0
     
