@@ -315,6 +315,12 @@ export default function ProfileScreen() {
           <Ionicons name="log-out" size={24} color={Colors.white} />
           <Text style={styles.logoutButtonText}>{t('logout')}</Text>
         </TouchableOpacity>
+
+        {/* Delete Account */}
+        <TouchableOpacity style={styles.deleteAccountButton} onPress={handleDeleteAccount}>
+          <Ionicons name="trash-outline" size={24} color={Colors.error} />
+          <Text style={styles.deleteAccountButtonText}>{t('deleteAccount') || 'Hesabı Sil'}</Text>
+        </TouchableOpacity>
       </ScrollView>
 
       {/* Language Selection Modal */}
