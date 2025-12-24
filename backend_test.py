@@ -322,13 +322,14 @@ class CalorieDietAPITester:
             
             if response.status_code == 200:
                 data = response.json()
-                if isinstance(data, list):
+                if "weekly_data" in data and isinstance(data["weekly_data"], list):
+                    weekly_data = data["weekly_data"]
                     self.log_test("Get Weekly Water", True, 
-                                f"Weekly water data: {len(data)} days", 
-                                {"days": len(data)})
+                                f"Weekly water data: {len(weekly_data)} days", 
+                                {"days": len(weekly_data)})
                 else:
                     self.log_test("Get Weekly Water", False, 
-                                "Invalid response format - expected list")
+                                "Invalid response format - expected weekly_data list", data)
             else:
                 self.log_test("Get Weekly Water", False, 
                             f"HTTP {response.status_code}: {response.text}")
