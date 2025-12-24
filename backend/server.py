@@ -85,13 +85,16 @@ def health():
 @api_router.get("/debug/storage-status")
 async def storage_status():
   """Check database connection status and storage type."""
+  # Import memory stores (defined later in file)
+  session_count = len(MEM_SESSIONS) if 'MEM_SESSIONS' in globals() and not mongo_db else "N/A"
+  user_count = len(MEM_USERS) if 'MEM_USERS' in globals() and not mongo_db else "N/A"
+  
   return {
     "storage_type": "mongodb" if mongo_db else "memory",
     "mongodb_connected": mongo_db is not None,
     "mongo_url_configured": bool(MONGO_URL),
     "warning": None if mongo_db else "Using in-memory storage - data will be lost on restart!",
-    "session_count": len(MEM_SESSIONS) if not mongo_db else "check_mongodb",
-    "user_count": len(MEM_USERS) if not mongo_db else "check_mongodb",
+    "hint": "Set MONGO_URL environment variable for persistent storage" if not mongo_db else None,
   }
 
 
