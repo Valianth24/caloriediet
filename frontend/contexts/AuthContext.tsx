@@ -309,26 +309,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Logout
+  // Logout - Only ends session, keeps account data on server
   const logout = async () => {
     console.log('[Auth] Logout initiated');
     try {
-      // Call backend logout (don't wait for it)
+      // Call backend logout (just invalidates session, doesn't delete account)
       apiLogout().catch((err) => console.log('[Auth] Backend logout error (ignored):', err));
     } catch (error) {
       console.error('[Auth] Error during logout API call:', error);
     }
     
-    // Always clear local session immediately
+    // Clear only session-related data, not all user preferences
     try {
       await AsyncStorage.multiRemove([
         'session_token',
-        'app_theme',
-        'is_premium',
-        'user_data',
-        'first_launch'
+        // Keep 'app_theme', 'first_launch' for user convenience
       ]);
-      console.log('[Auth] AsyncStorage cleared');
+      console.log('[Auth] Session token cleared');
     } catch (storageError) {
       console.error('[Auth] AsyncStorage clear error:', storageError);
     }
@@ -336,14 +333,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Clear auth token
     setAuthToken(null);
     
-    // Reset entire Zustand store
+    // Reset Zustand store (clears in-memory user data)
     resetStore();
     
     // Update state - This will trigger navigation to login
     setIsAuthenticated(false);
     setNeedsOnboarding(false);
     
-    console.log('[Auth] Logout complete, isAuthenticated:', false);
+    console.log('[Auth] Logout complete, user can login again with same account');
     
     // Force reload on web to ensure clean state
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
