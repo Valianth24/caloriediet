@@ -1792,53 +1792,38 @@ class ToggleVitaminRequest(BaseModel):
 
 
 async def get_user_vitamins(user_id: str) -> List[Dict[str, Any]]:
-  today = today_str()
-  if mongo_db:
+    """Get user vitamins from MongoDB."""
+    if not mongo_db:
+        return []
+    today = today_str()
     cursor = mongo_db.vitamins.find({"user_id": user_id}, {"_id": 0})
     vitamins = await cursor.to_list(length=100)
     # Reset is_taken if date changed
     for v in vitamins:
-      if v.get("last_taken_date") != today:
-        v["is_taken"] = False
+        if v.get("last_taken_date") != today:
+            v["is_taken"] = False
     return vitamins
-  else:
-    user_vitamins = MEM_VITAMINS.get(user_id, [])
-    # Reset is_taken if date changed
-    for v in user_vitamins:
-      if v.get("last_taken_date") != today:
-        v["is_taken"] = False
-    return user_vitamins
 
 
 async def add_user_vitamin(user_id: str, vitamin_data: Dict[str, Any]):
-  if mongo_db:
+    """Add vitamin to MongoDB."""
+    require_mongo()
     await mongo_db.vitamins.insert_one(vitamin_data)
-  else:
-    if user_id not in MEM_VITAMINS:
-      MEM_VITAMINS[user_id] = []
-    MEM_VITAMINS[user_id].append(vitamin_data)
 
 
 async def update_vitamin(user_id: str, vitamin_id: str, update: Dict[str, Any]):
-  if mongo_db:
+    """Update vitamin in MongoDB."""
+    require_mongo()
     await mongo_db.vitamins.update_one(
-      {"user_id": user_id, "vitamin_id": vitamin_id},
-      {"$set": update}
+        {"user_id": user_id, "vitamin_id": vitamin_id},
+        {"$set": update}
     )
-  else:
-    user_vitamins = MEM_VITAMINS.get(user_id, [])
-    for v in user_vitamins:
-      if v["vitamin_id"] == vitamin_id:
-        v.update(update)
-        break
 
 
 async def delete_user_vitamin(user_id: str, vitamin_id: str):
-  if mongo_db:
+    """Delete vitamin from MongoDB."""
+    require_mongo()
     await mongo_db.vitamins.delete_one({"user_id": user_id, "vitamin_id": vitamin_id})
-  else:
-    user_vitamins = MEM_VITAMINS.get(user_id, [])
-    MEM_VITAMINS[user_id] = [v for v in user_vitamins if v["vitamin_id"] != vitamin_id]
 
 
 @api_router.get("/vitamins/templates")
