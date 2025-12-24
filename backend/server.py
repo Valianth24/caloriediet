@@ -515,7 +515,7 @@ async def store_update_user(user_id: str, update: Dict[str, Any]):
     if user_id in MEM_USERS:
       MEM_USERS[user_id].update(update)
 
-async def store_create_session(user_id: str, session_token: str, days: int = 7):
+async def store_create_session(user_id: str, session_token: str, days: int = 30):
   session_doc = {
     "user_id": user_id,
     "session_token": session_token,
@@ -526,6 +526,7 @@ async def store_create_session(user_id: str, session_token: str, days: int = 7):
     await mongo_db.user_sessions.insert_one(session_doc)
   else:
     MEM_SESSIONS[session_token] = session_doc
+  logger.info(f"Session created for user {user_id}, expires in {days} days")
 
 async def store_get_session(session_token: str) -> Optional[Dict[str, Any]]:
   if mongo_db:
