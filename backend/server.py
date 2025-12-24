@@ -545,19 +545,19 @@ def calculate_calorie_goal(height: float, weight: float, age: int, gender: str, 
   }
   return int(bmr * factors.get(activity_level, 1.2))
 
+def require_mongo():
+    """Raise HTTPException if MongoDB is not configured."""
+    if not mongo_db:
+        raise HTTPException(
+            status_code=500,
+            detail="Database not configured. Please set MONGO_URL environment variable."
+        )
 
 # -------------------------
-# MEMORY STORE (fallback)
+# MEMORY STORE (for OAuth sessions ONLY - short-lived)
 # -------------------------
-MEM_USERS: Dict[str, Dict[str, Any]] = {}
-MEM_USERS_BY_EMAIL: Dict[str, str] = {}
 MEM_SESSIONS: Dict[str, Dict[str, Any]] = {}
 memory_sessions = MEM_SESSIONS  # Alias for OAuth endpoint
-
-# Data stores for new features
-MEM_VITAMINS: Dict[str, List[Dict[str, Any]]] = {}  # user_id -> [vitamin list]
-MEM_WATER: Dict[str, List[Dict[str, Any]]] = {}     # user_id -> [water entries]
-MEM_STEPS: Dict[str, Dict[str, Any]] = {}           # user_id -> {date: steps_data}
 MEM_MEALS: Dict[str, List[Dict[str, Any]]] = {}     # user_id -> [meal list]
 
 # Data retention policy
