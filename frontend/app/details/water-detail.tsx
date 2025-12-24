@@ -10,7 +10,7 @@ import { useRouter } from 'expo-router';
 import { useStore } from '../../store/useStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LogBox } from 'react-native';
-import { clearReminderNotifications, requestNotificationPermission, syncReminderNotifications } from '../../utils/notifications';
+import { clearReminderNotifications, requestNotificationPermission, syncReminderNotifications, sendTestNotification, getScheduledNotifications } from '../../utils/notifications';
 
 const screenWidth = Dimensions.get('window').width;
 
