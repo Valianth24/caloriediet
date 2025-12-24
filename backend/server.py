@@ -660,7 +660,7 @@ async def exchange_session(request: Request):
       "picture": picture,
       "session_token": session_token,
     })
-    set_session_cookie(resp, request, session_token, max_age_seconds=7 * 24 * 60 * 60)
+    set_session_cookie(resp, request, session_token, max_age_seconds=30 * 24 * 60 * 60)
     return resp
   
   # Fallback to Emergent OAuth (legacy support)
@@ -710,7 +710,7 @@ async def exchange_session(request: Request):
     "picture": picture,
     "session_token": session_token,
   })
-  set_session_cookie(resp, request, session_token, max_age_seconds=7 * 24 * 60 * 60)
+  set_session_cookie(resp, request, session_token, max_age_seconds=30 * 24 * 60 * 60)
   return resp
 
 
@@ -884,7 +884,7 @@ async def guest_login(request: Request):
     "picture": None,
     "session_token": session_token,
   })
-  set_session_cookie(resp, request, session_token, max_age_seconds=7 * 24 * 60 * 60)
+  set_session_cookie(resp, request, session_token, max_age_seconds=30 * 24 * 60 * 60)
   return resp
 
 
