@@ -20,13 +20,36 @@ from pydantic import BaseModel, Field, field_validator
 import re
 import json
 
-# Optional Mongo (won't crash if missing)
+# MongoDB Configuration (REQUIRED - no memory fallback)
 MONGO_URL = os.getenv("MONGO_URL", "").strip()
 DB_NAME = os.getenv("DB_NAME", "caloriediet").strip()
 
 # Configure logging early
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Parse MongoDB host for debug info
+def parse_mongo_host(url: str) -> str:
+    """Extract host from MongoDB URL for debug purposes."""
+    if not url:
+        return "not_configured"
+    try:
+        # Remove protocol
+        if "://" in url:
+            url = url.split("://")[1]
+        # Remove credentials
+        if "@" in url:
+            url = url.split("@")[1]
+        # Get host part
+        if "/" in url:
+            url = url.split("/")[0]
+        if "?" in url:
+            url = url.split("?")[0]
+        return url
+    except:
+        return "parse_error"
+
+MONGO_HOST = parse_mongo_host(MONGO_URL)
 
 # Google OAuth Configuration
 GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "").strip()
@@ -39,33 +62,41 @@ BACKEND_PUBLIC_URL = os.getenv("BACKEND_PUBLIC_URL", "https://caloriediet-backen
 if not OAUTH_CALLBACK_URL:
     OAUTH_CALLBACK_URL = f"{BACKEND_PUBLIC_URL}/auth/callback"
 
-# In-memory storage for OAuth sessions (short-lived, 5 min TTL)
+# In-memory storage for OAuth sessions only (short-lived, 5 min TTL)
 _oauth_sessions: Dict[str, Dict[str, Any]] = {}
 
+# MongoDB connection (REQUIRED)
 mongo_client = None
 mongo_db = None
+mongo_connected = False
+
+# Collections used in this app
+MONGO_COLLECTIONS = ["users", "user_sessions", "meals", "water", "steps", "vitamins"]
 
 if MONGO_URL:
-  try:
-    from motor.motor_asyncio import AsyncIOMotorClient  # type: ignore
-
-    mongo_client = AsyncIOMotorClient(MONGO_URL)
-    mongo_db = mongo_client[DB_NAME]
-    logger.info(f"MongoDB connected: {DB_NAME}")
-  except Exception as e:
-    logger.error(f"MongoDB connection failed: {e}")
-    mongo_client = None
-    mongo_db = None
+    try:
+        from motor.motor_asyncio import AsyncIOMotorClient  # type: ignore
+        
+        mongo_client = AsyncIOMotorClient(MONGO_URL)
+        mongo_db = mongo_client[DB_NAME]
+        mongo_connected = True
+        logger.info(f"✅ MongoDB configured: {DB_NAME} @ {MONGO_HOST}")
+    except Exception as e:
+        logger.error(f"❌ MongoDB connection failed: {e}")
+        mongo_client = None
+        mongo_db = None
+        mongo_connected = False
 else:
-  logger.warning("MONGO_URL not set - using in-memory storage (data will be lost on restart!)")
+    logger.warning("⚠️ MONGO_URL not set - API write operations will fail!")
+    logger.warning("⚠️ Set MONGO_URL environment variable to enable data persistence")
 
 # Optional Emergent integrations (shim exists in repo; still safe-guard)
 try:
-  from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent  # type: ignore
+    from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent  # type: ignore
 except Exception:
-  LlmChat = None
-  UserMessage = None
-  ImageContent = None
+    LlmChat = None
+    UserMessage = None
+    ImageContent = None
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / ".env")
