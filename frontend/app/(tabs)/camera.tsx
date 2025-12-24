@@ -219,17 +219,28 @@ export default function CameraScreen() {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Vision API error:', errorText);
-        throw new Error(t('error'));
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.detail || `Server error: ${response.status}`;
+        console.error('Vision API error:', response.status, errorMessage);
+        
+        // Show specific error message from backend
+        Alert.alert(
+          t('error'), 
+          errorMessage.includes('not configured') 
+            ? 'OpenAI API anahtarı yapılandırılmamış. Lütfen yöneticiyle iletişime geçin.'
+            : errorMessage.includes('rate limit')
+            ? 'API limiti aşıldı. Lütfen biraz bekleyin.'
+            : `Analiz hatası: ${errorMessage}`
+        );
+        return;
       }
 
       const data: VisionResult = await response.json();
       setResult(data);
       setEditedItems(data.items);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error analyzing image:', error);
-      Alert.alert(t('error'), t('aiNotAvailable'));
+      Alert.alert(t('error'), error.message || t('aiNotAvailable'));
     } finally {
       setAnalyzing(false);
     }
