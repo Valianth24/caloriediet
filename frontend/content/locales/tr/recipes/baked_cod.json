@@ -1,0 +1,79 @@
+{
+  "name": "Fırında Morina",
+  "description": "TODO: Fırında Morina açıklaması (1-2 cümle).",
+  "prepTime": "TODO: X dakika",
+  "cookTime": "TODO: X dakika",
+  "totalTime": "TODO: X dakika",
+  "servings": 2,
+  "ingredients": [
+    {
+      "name": "TODO",
+      "amount": "TODO",
+      "unit": "adet",
+      "note": "TODO"
+    },
+    {
+      "name": "TODO",
+      "amount": "TODO",
+      "unit": "su bardağı"
+    },
+    {
+      "name": "TODO",
+      "amount": "TODO",
+      "unit": "yemek kaşığı"
+    },
+    {
+      "name": "TODO",
+      "amount": "TODO",
+      "unit": "çay kaşığı"
+    },
+    {
+      "name": "TODO",
+      "amount": "TODO",
+      "unit": "gr"
+    }
+  ],
+  "instructions": [
+    {
+      "step": 1,
+      "instruction": "TODO",
+      "tip": "TODO",
+      "duration": "TODO"
+    },
+    {
+      "step": 2,
+      "instruction": "TODO",
+      "tip": "TODO"
+    },
+    {
+      "step": 3,
+      "instruction": "TODO"
+    },
+    {
+      "step": 4,
+      "instruction": "TODO"
+    },
+    {
+      "step": 5,
+      "instruction": "TODO"
+    }
+  ],
+  "nutrition": {
+    "calories": 0,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0,
+    "fiber": 0
+  },
+  "tips": [
+    "TODO: İpucu 1",
+    "TODO: İpucu 2",
+    "TODO: İpucu 3"
+  ],
+  "storageInfo": "TODO: Saklama bilgisi",
+  "servingSuggestion": "TODO: Servis önerisi",
+  "variations": [
+    "TODO: Varyasyon 1",
+    "TODO: Varyasyon 2"
+  ]
+}
