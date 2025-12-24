@@ -24,6 +24,10 @@ import json
 MONGO_URL = os.getenv("MONGO_URL", "").strip()
 DB_NAME = os.getenv("DB_NAME", "caloriediet").strip()
 
+# Configure logging early
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Google OAuth Configuration
 GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "").strip()
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "").strip()
