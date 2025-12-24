@@ -555,7 +555,7 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     flexDirection: 'row',
-    backgroundColor: Colors.error,
+    backgroundColor: Colors.primary,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -566,6 +566,23 @@ const styles = StyleSheet.create({
   logoutButtonText: {
     color: Colors.white,
     fontSize: 18,
+    fontWeight: '600',
+  },
+  deleteAccountButton: {
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: Colors.error,
+  },
+  deleteAccountButtonText: {
+    color: Colors.error,
+    fontSize: 16,
     fontWeight: '600',
   },
   // Modal styles
