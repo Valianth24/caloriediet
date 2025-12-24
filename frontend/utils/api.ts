@@ -90,7 +90,14 @@ async function apiRequest<T>(
       
       // Specific error messages
       if (response.status === 401) {
-        throw new Error('Not authenticated - please login again');
+        // Clear local token on 401
+        console.log('[API] 401 - Clearing auth token and triggering logout');
+        authToken = null;
+        AsyncStorage.removeItem('session_token').catch(() => {});
+        if (onAuthFailure) {
+          onAuthFailure();
+        }
+        throw new Error('Session expired - please login again');
       } else if (response.status === 403) {
         throw new Error('Access denied');
       } else if (response.status === 404) {
