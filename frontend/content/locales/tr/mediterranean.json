@@ -1,0 +1,268 @@
+{
+  "title": "Akdeniz Diyeti",
+  "shortSummary": "TODO: Akdeniz diyeti, zeytinyağı, taze sebzeler, meyveler, baklagiller, tam tahıllar ve balık tüketimine dayanan, kalp sağlığını destekleyen geleneksel bir beslenme yaklaşımıdır. (200-300 karakter)",
+  "whoItsFor": [
+    "TODO: Kalp sağlığını korumak isteyenler",
+    "TODO: Sağlıklı ve sürdürülebilir kilo vermek isteyenler",
+    "TODO: Kolesterol ve tansiyon değerlerini kontrol altına almak isteyenler",
+    "TODO: Beyin sağlığını desteklemek isteyenler",
+    "TODO: Lezzetli ve çeşitli yemeklerden vazgeçmek istemeyenler"
+  ],
+  "cautions": [
+    {
+      "group": "TODO: Böbrek hastaları",
+      "warning": "TODO: Yüksek potasyum içeren bazı sebzeler için doktorunuza danışın."
+    },
+    {
+      "group": "TODO: Karaciğer yağlanması olanlar",
+      "warning": "TODO: Zeytinyağı miktarını doktorunuzla belirleyin."
+    },
+    {
+      "group": "TODO: Alerji/intolerans",
+      "warning": "TODO: Deniz ürünleri, gluten veya kuruyemiş alerjiniz varsa alternatifleri değerlendirin."
+    }
+  ],
+  "goals": ["heart_health", "weight_loss", "longevity", "brain_health"],
+  "corePrinciples": [
+    "TODO: Her öğünde bol miktarda sebze tüketin",
+    "TODO: Ana yağ kaynağı olarak zeytinyağı kullanın",
+    "TODO: Haftada en az 2 kez balık yiyin",
+    "TODO: Kırmızı et tüketimini ayda birkaç porsiyonla sınırlayın",
+    "TODO: Tam tahıllı ürünleri tercih edin",
+    "TODO: Günlük taze meyve tüketin",
+    "TODO: Baklagilleri haftada birkaç kez ekleyin",
+    "TODO: Az miktarda kuruyemiş atıştırın",
+    "TODO: İşlenmiş gıdalardan uzak durun",
+    "TODO: Yemekleri sevdiklerinizle paylaşın"
+  ],
+  "dailyTargets": [
+    {
+      "item": "Sebze",
+      "target": "TODO",
+      "note": "TODO: Her öğünde tabağın yarısı sebze olmalı"
+    },
+    {
+      "item": "Meyve",
+      "target": "TODO",
+      "note": "TODO: Tatlı yerine meyve tercih edin"
+    },
+    {
+      "item": "Zeytinyağı",
+      "target": "TODO",
+      "note": "TODO: Ana yağ kaynağı"
+    },
+    {
+      "item": "Tam tahıl",
+      "target": "TODO",
+      "note": "TODO: Rafine tahıllar yerine tam tahıl"
+    },
+    {
+      "item": "Su",
+      "target": "TODO",
+      "note": "TODO: Ana içecek su olmalı"
+    }
+  ],
+  "weeklyTargets": [
+    {
+      "item": "Balık",
+      "target": "TODO",
+      "note": "TODO: Omega-3 açısından zengin balıklar tercih edin"
+    },
+    {
+      "item": "Baklagil",
+      "target": "TODO",
+      "note": "TODO: Protein ve lif kaynağı"
+    },
+    {
+      "item": "Kümes hayvanları",
+      "target": "TODO",
+      "note": "TODO: Derisiz ve az yağlı pişirme"
+    },
+    {
+      "item": "Yumurta",
+      "target": "TODO",
+      "note": "TODO: Protein kaynağı"
+    },
+    {
+      "item": "Kırmızı et",
+      "target": "TODO",
+      "note": "TODO: Ayda birkaç kez ile sınırlayın"
+    }
+  ],
+  "foodsToFocus": [
+    {
+      "category": "Sebzeler",
+      "examples": ["TODO: Domates", "TODO: Salatalık", "TODO: Biber", "TODO: Patlıcan", "TODO: Kabak", "TODO: Ispanak", "TODO: Brokoli"]
+    },
+    {
+      "category": "Meyveler",
+      "examples": ["TODO: Portakal", "TODO: Elma", "TODO: Üzüm", "TODO: İncir", "TODO: Nar", "TODO: Kayısı"]
+    },
+    {
+      "category": "Tam Tahıllar",
+      "examples": ["TODO: Bulgur", "TODO: Tam buğday ekmeği", "TODO: Yulaf", "TODO: Esmer pirinç", "TODO: Kinoa"]
+    },
+    {
+      "category": "Baklagiller",
+      "examples": ["TODO: Mercimek", "TODO: Nohut", "TODO: Fasulye", "TODO: Barbunya"]
+    },
+    {
+      "category": "Sağlıklı Yağlar",
+      "examples": ["TODO: Zeytinyağı", "TODO: Avokado", "TODO: Badem", "TODO: Ceviz"]
+    },
+    {
+      "category": "Deniz Ürünleri",
+      "examples": ["TODO: Somon", "TODO: Sardalya", "TODO: Uskumru", "TODO: Levrek", "TODO: Çipura"]
+    }
+  ],
+  "foodsToLimit": [
+    {
+      "category": "Kırmızı Et",
+      "examples": ["TODO: Dana eti", "TODO: Kuzu eti", "TODO: Kıyma"]
+    },
+    {
+      "category": "İşlenmiş Gıdalar",
+      "examples": ["TODO: Sosis", "TODO: Sucuk", "TODO: Hazır yemekler", "TODO: Paketli atıştırmalıklar"]
+    },
+    {
+      "category": "Rafine Tahıllar",
+      "examples": ["TODO: Beyaz ekmek", "TODO: Beyaz pirinç", "TODO: Beyaz makarna"]
+    },
+    {
+      "category": "Şekerli Gıdalar",
+      "examples": ["TODO: Gazlı içecekler", "TODO: Şekerlemeler", "TODO: Pastane ürünleri"]
+    },
+    {
+      "category": "Trans Yağlar",
+      "examples": ["TODO: Margarin", "TODO: Kızartma yağları", "TODO: Fast food"]
+    }
+  ],
+  "portionGuide": [
+    {
+      "item": "Zeytinyağı",
+      "portion": "TODO",
+      "note": "TODO: Günlük önerilen miktar"
+    },
+    {
+      "item": "Balık",
+      "portion": "TODO",
+      "note": "TODO: Avuç içi kadar"
+    },
+    {
+      "item": "Sebze",
+      "portion": "TODO",
+      "note": "TODO: Tabağın yarısı"
+    },
+    {
+      "item": "Tam tahıl",
+      "portion": "TODO",
+      "note": "TODO: Yumruk büyüklüğü"
+    },
+    {
+      "item": "Kuruyemiş",
+      "portion": "TODO",
+      "note": "TODO: Bir avuç"
+    }
+  ],
+  "sampleDayMenu": {
+    "breakfast": {
+      "name": "TODO: Akdeniz Kahvaltısı",
+      "description": "TODO: Tam tahıllı ekmek, zeytinyağı, domates, salatalık, beyaz peynir, zeytin ve taze sıkılmış portakal suyu"
+    },
+    "lunch": {
+      "name": "TODO: Izgara Balık Tabağı",
+      "description": "TODO: Zeytinyağlı levrek, bulgur pilavı, mevsim salatası ve limonlu sos"
+    },
+    "dinner": {
+      "name": "TODO: Sebzeli Mercimek",
+      "description": "TODO: Mercimek çorbası, tam buğday ekmeği ve zeytinyağlı enginar"
+    },
+    "snacks": [
+      {
+        "name": "TODO: Ara Öğün 1",
+        "description": "TODO: Bir avuç badem ve taze meyve"
+      },
+      {
+        "name": "TODO: Ara Öğün 2",
+        "description": "TODO: Humus ile havuç ve kereviz çubukları"
+      }
+    ]
+  },
+  "shoppingList": [
+    {
+      "category": "Sebze-Meyve",
+      "items": ["TODO: Domates", "TODO: Salatalık", "TODO: Biber", "TODO: Ispanak", "TODO: Portakal", "TODO: Elma", "TODO: Limon"]
+    },
+    {
+      "category": "Protein",
+      "items": ["TODO: Taze balık", "TODO: Tavuk göğsü", "TODO: Yumurta", "TODO: Beyaz peynir"]
+    },
+    {
+      "category": "Baklagil-Tahıl",
+      "items": ["TODO: Mercimek", "TODO: Nohut", "TODO: Bulgur", "TODO: Tam buğday ekmeği"]
+    },
+    {
+      "category": "Yağ-Kuruyemiş",
+      "items": ["TODO: Sızma zeytinyağı", "TODO: Zeytin", "TODO: Badem", "TODO: Ceviz"]
+    },
+    {
+      "category": "Baharat-Sos",
+      "items": ["TODO: Sarımsak", "TODO: Soğan", "TODO: Taze otlar", "TODO: Limon"]
+    }
+  ],
+  "tips": [
+    "TODO: Her yemeğe zeytinyağı ekleyin ancak miktarı kontrol edin",
+    "TODO: Haftada en az 2-3 kez balık yemeyi alışkanlık haline getirin",
+    "TODO: Tatlı yerine mevsim meyvesi tercih edin",
+    "TODO: Yemekleri aile veya arkadaşlarla paylaşmak doygunluğu artırır",
+    "TODO: Mevsiminde ve yerel üretilen ürünleri tercih edin",
+    "TODO: Yavaş yiyin ve her lokmayı iyice çiğneyin"
+  ],
+  "commonMistakes": [
+    "TODO: Zeytinyağını aşırı miktarda tüketmek - kalori yoğun bir yağdır",
+    "TODO: Sadece makarna ve ekmek yiyerek 'Akdeniz' diyeti yaptığını sanmak",
+    "TODO: Balık yerine sürekli kırmızı et tercih etmek",
+    "TODO: İşlenmiş zeytinyağı ürünlerini sızma zeytinyağı sanmak",
+    "TODO: Porsiyon kontrolünü ihmal etmek",
+    "TODO: Şarabı abartmak (önerilmez, su tercih edilmeli)"
+  ],
+  "faq": [
+    {
+      "question": "TODO: Akdeniz diyetinde et yiyebilir miyim?",
+      "answer": "TODO: Evet, ancak kırmızı et ayda birkaç porsiyonla sınırlandırılmalı. Balık ve kümes hayvanları tercih edilmeli."
+    },
+    {
+      "question": "TODO: Zeytinyağı yerine başka yağ kullanabilir miyim?",
+      "answer": "TODO: Akdeniz diyetinin temeli zeytinyağıdır. Alternatif olarak avokado yağı düşünülebilir."
+    },
+    {
+      "question": "TODO: Bu diyet pahalı mı?",
+      "answer": "TODO: Mevsiminde ve yerel ürünler tercih edildiğinde ekonomik olabilir. Baklagiller ucuz protein kaynağıdır."
+    },
+    {
+      "question": "TODO: Vejetaryen olarak uygulayabilir miyim?",
+      "answer": "TODO: Evet, balık yerine baklagiller, tofu ve yumurta ile protein ihtiyacınızı karşılayabilirsiniz."
+    },
+    {
+      "question": "TODO: Ne kadar sürede sonuç görürüm?",
+      "answer": "TODO: Bu bir yaşam tarzıdır. Birkaç hafta içinde enerji artışı, birkaç ayda kilo ve kan değerlerinde iyileşme görülebilir."
+    }
+  ],
+  "references": [
+    {
+      "title": "TODO: Mediterranean Diet and Cardiovascular Disease",
+      "url": "TODO: https://example.com/study1",
+      "note": "TODO: Kalp sağlığı üzerine araştırma"
+    },
+    {
+      "title": "TODO: PREDIMED Study",
+      "url": "TODO: https://example.com/predimed",
+      "note": "TODO: Akdeniz diyeti üzerine büyük klinik çalışma"
+    },
+    {
+      "title": "TODO: WHO Healthy Diet Guidelines",
+      "url": "TODO: https://who.int",
+      "note": "TODO: Dünya Sağlık Örgütü beslenme önerileri"
+    }
+  ]
+}
