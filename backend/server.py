@@ -47,9 +47,13 @@ if MONGO_URL:
 
     mongo_client = AsyncIOMotorClient(MONGO_URL)
     mongo_db = mongo_client[DB_NAME]
+    logger.info(f"MongoDB connected: {DB_NAME}")
   except Exception as e:
+    logger.error(f"MongoDB connection failed: {e}")
     mongo_client = None
     mongo_db = None
+else:
+  logger.warning("MONGO_URL not set - using in-memory storage (data will be lost on restart!)")
 
 # Optional Emergent integrations (shim exists in repo; still safe-guard)
 try:
