@@ -5,7 +5,7 @@ import * as AuthSession from 'expo-auth-session';
 import * as Linking from 'expo-linking';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
-import { exchangeSession, getMe, logout as apiLogout, setAuthToken, guestLogin } from '../utils/api';
+import { exchangeSession, getMe, logout as apiLogout, setAuthToken, guestLogin, setOnAuthFailure } from '../utils/api';
 import { useStore } from '../store/useStore';
 
 // CRITICAL: This must be called at module level for OAuth redirect to work
