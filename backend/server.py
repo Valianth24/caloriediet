@@ -1112,8 +1112,14 @@ import openai
 from PIL import Image
 import io
 
-# Read OpenAI API Key (OPENAI_KEY or OPENAI_API_KEY)
-OPENAI_API_KEY = os.getenv("OPENAI_KEY", "").strip() or os.getenv("OPENAI_API_KEY", "").strip()
+def get_openai_api_key():
+    """Get OpenAI API key from environment, checking multiple possible names."""
+    key = os.getenv("OPENAI_KEY", "").strip()
+    if not key:
+        key = os.getenv("OPENAI_API_KEY", "").strip()
+    # Remove any quotes that might be accidentally included
+    key = key.strip('"').strip("'")
+    return key if key else None
 
 # Model configuration for diet app
 VISION_MODEL_PRIMARY = "gpt-4o-mini"  # Cost-effective for food analysis
