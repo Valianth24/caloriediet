@@ -1211,22 +1211,18 @@ class AddMealRequest(BaseModel):
 
 
 async def get_user_meals(user_id: str, date: Optional[str] = None) -> List[Dict[str, Any]]:
-  target_date = date or today_str()
-  if mongo_db:
+    """Get user meals from MongoDB."""
+    if not mongo_db:
+        return []
+    target_date = date or today_str()
     cursor = mongo_db.meals.find({"user_id": user_id, "date": target_date}, {"_id": 0})
     return await cursor.to_list(length=100)
-  else:
-    user_meals = MEM_MEALS.get(user_id, [])
-    return [m for m in user_meals if m.get("date") == target_date]
 
 
 async def add_user_meal(user_id: str, meal_data: Dict[str, Any]):
-  if mongo_db:
+    """Add meal to MongoDB."""
+    require_mongo()
     await mongo_db.meals.insert_one(meal_data)
-  else:
-    if user_id not in MEM_MEALS:
-      MEM_MEALS[user_id] = []
-    MEM_MEALS[user_id].append(meal_data)
 
 
 @api_router.post("/food/add-meal")
