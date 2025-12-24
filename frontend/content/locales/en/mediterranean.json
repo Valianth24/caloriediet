@@ -1,0 +1,268 @@
+{
+  "title": "Mediterranean Diet",
+  "shortSummary": "TODO: The Mediterranean diet emphasizes olive oil, fresh vegetables, fruits, legumes, whole grains, and fish consumption, supporting heart health as a traditional nutritional approach. (200-300 characters)",
+  "whoItsFor": [
+    "TODO: Those who want to protect heart health",
+    "TODO: Those who want to lose weight healthily and sustainably",
+    "TODO: Those who want to control cholesterol and blood pressure levels",
+    "TODO: Those who want to support brain health",
+    "TODO: Those who don't want to give up delicious and varied meals"
+  ],
+  "cautions": [
+    {
+      "group": "TODO: Kidney disease patients",
+      "warning": "TODO: Consult your doctor for some vegetables high in potassium."
+    },
+    {
+      "group": "TODO: Those with fatty liver",
+      "warning": "TODO: Determine olive oil amount with your doctor."
+    },
+    {
+      "group": "TODO: Allergy/intolerance",
+      "warning": "TODO: Consider alternatives if you have seafood, gluten, or nut allergies."
+    }
+  ],
+  "goals": ["heart_health", "weight_loss", "longevity", "brain_health"],
+  "corePrinciples": [
+    "TODO: Consume plenty of vegetables at every meal",
+    "TODO: Use olive oil as the main fat source",
+    "TODO: Eat fish at least twice a week",
+    "TODO: Limit red meat consumption to a few portions per month",
+    "TODO: Prefer whole grain products",
+    "TODO: Consume fresh fruit daily",
+    "TODO: Add legumes several times a week",
+    "TODO: Snack on small amounts of nuts",
+    "TODO: Stay away from processed foods",
+    "TODO: Share meals with loved ones"
+  ],
+  "dailyTargets": [
+    {
+      "item": "Vegetables",
+      "target": "TODO",
+      "note": "TODO: Half of the plate should be vegetables at every meal"
+    },
+    {
+      "item": "Fruit",
+      "target": "TODO",
+      "note": "TODO: Prefer fruit instead of dessert"
+    },
+    {
+      "item": "Olive oil",
+      "target": "TODO",
+      "note": "TODO: Main fat source"
+    },
+    {
+      "item": "Whole grains",
+      "target": "TODO",
+      "note": "TODO: Whole grains instead of refined grains"
+    },
+    {
+      "item": "Water",
+      "target": "TODO",
+      "note": "TODO: Main beverage should be water"
+    }
+  ],
+  "weeklyTargets": [
+    {
+      "item": "Fish",
+      "target": "TODO",
+      "note": "TODO: Prefer fish rich in omega-3"
+    },
+    {
+      "item": "Legumes",
+      "target": "TODO",
+      "note": "TODO: Protein and fiber source"
+    },
+    {
+      "item": "Poultry",
+      "target": "TODO",
+      "note": "TODO: Skinless and low-fat cooking"
+    },
+    {
+      "item": "Eggs",
+      "target": "TODO",
+      "note": "TODO: Protein source"
+    },
+    {
+      "item": "Red meat",
+      "target": "TODO",
+      "note": "TODO: Limit to a few times per month"
+    }
+  ],
+  "foodsToFocus": [
+    {
+      "category": "Vegetables",
+      "examples": ["TODO: Tomatoes", "TODO: Cucumbers", "TODO: Peppers", "TODO: Eggplant", "TODO: Zucchini", "TODO: Spinach", "TODO: Broccoli"]
+    },
+    {
+      "category": "Fruits",
+      "examples": ["TODO: Oranges", "TODO: Apples", "TODO: Grapes", "TODO: Figs", "TODO: Pomegranate", "TODO: Apricots"]
+    },
+    {
+      "category": "Whole Grains",
+      "examples": ["TODO: Bulgur", "TODO: Whole wheat bread", "TODO: Oats", "TODO: Brown rice", "TODO: Quinoa"]
+    },
+    {
+      "category": "Legumes",
+      "examples": ["TODO: Lentils", "TODO: Chickpeas", "TODO: Beans", "TODO: Kidney beans"]
+    },
+    {
+      "category": "Healthy Fats",
+      "examples": ["TODO: Olive oil", "TODO: Avocado", "TODO: Almonds", "TODO: Walnuts"]
+    },
+    {
+      "category": "Seafood",
+      "examples": ["TODO: Salmon", "TODO: Sardines", "TODO: Mackerel", "TODO: Sea bass", "TODO: Sea bream"]
+    }
+  ],
+  "foodsToLimit": [
+    {
+      "category": "Red Meat",
+      "examples": ["TODO: Beef", "TODO: Lamb", "TODO: Ground meat"]
+    },
+    {
+      "category": "Processed Foods",
+      "examples": ["TODO: Sausages", "TODO: Cold cuts", "TODO: Ready meals", "TODO: Packaged snacks"]
+    },
+    {
+      "category": "Refined Grains",
+      "examples": ["TODO: White bread", "TODO: White rice", "TODO: White pasta"]
+    },
+    {
+      "category": "Sugary Foods",
+      "examples": ["TODO: Sodas", "TODO: Candies", "TODO: Pastries"]
+    },
+    {
+      "category": "Trans Fats",
+      "examples": ["TODO: Margarine", "TODO: Frying oils", "TODO: Fast food"]
+    }
+  ],
+  "portionGuide": [
+    {
+      "item": "Olive oil",
+      "portion": "TODO",
+      "note": "TODO: Daily recommended amount"
+    },
+    {
+      "item": "Fish",
+      "portion": "TODO",
+      "note": "TODO: Palm-sized"
+    },
+    {
+      "item": "Vegetables",
+      "portion": "TODO",
+      "note": "TODO: Half the plate"
+    },
+    {
+      "item": "Whole grains",
+      "portion": "TODO",
+      "note": "TODO: Fist-sized"
+    },
+    {
+      "item": "Nuts",
+      "portion": "TODO",
+      "note": "TODO: A handful"
+    }
+  ],
+  "sampleDayMenu": {
+    "breakfast": {
+      "name": "TODO: Mediterranean Breakfast",
+      "description": "TODO: Whole grain bread, olive oil, tomatoes, cucumbers, white cheese, olives, and freshly squeezed orange juice"
+    },
+    "lunch": {
+      "name": "TODO: Grilled Fish Plate",
+      "description": "TODO: Olive oil sea bass, bulgur pilaf, seasonal salad, and lemon sauce"
+    },
+    "dinner": {
+      "name": "TODO: Vegetable Lentil Soup",
+      "description": "TODO: Lentil soup, whole wheat bread, and olive oil artichoke"
+    },
+    "snacks": [
+      {
+        "name": "TODO: Snack 1",
+        "description": "TODO: A handful of almonds and fresh fruit"
+      },
+      {
+        "name": "TODO: Snack 2",
+        "description": "TODO: Hummus with carrot and celery sticks"
+      }
+    ]
+  },
+  "shoppingList": [
+    {
+      "category": "Produce",
+      "items": ["TODO: Tomatoes", "TODO: Cucumbers", "TODO: Peppers", "TODO: Spinach", "TODO: Oranges", "TODO: Apples", "TODO: Lemons"]
+    },
+    {
+      "category": "Protein",
+      "items": ["TODO: Fresh fish", "TODO: Chicken breast", "TODO: Eggs", "TODO: Feta cheese"]
+    },
+    {
+      "category": "Legumes-Grains",
+      "items": ["TODO: Lentils", "TODO: Chickpeas", "TODO: Bulgur", "TODO: Whole wheat bread"]
+    },
+    {
+      "category": "Fats-Nuts",
+      "items": ["TODO: Extra virgin olive oil", "TODO: Olives", "TODO: Almonds", "TODO: Walnuts"]
+    },
+    {
+      "category": "Seasonings",
+      "items": ["TODO: Garlic", "TODO: Onions", "TODO: Fresh herbs", "TODO: Lemon"]
+    }
+  ],
+  "tips": [
+    "TODO: Add olive oil to every meal but control the amount",
+    "TODO: Make eating fish at least 2-3 times a week a habit",
+    "TODO: Prefer seasonal fruit instead of dessert",
+    "TODO: Sharing meals with family or friends increases satiety",
+    "TODO: Prefer seasonal and locally produced products",
+    "TODO: Eat slowly and chew each bite thoroughly"
+  ],
+  "commonMistakes": [
+    "TODO: Consuming olive oil excessively - it's a calorie-dense fat",
+    "TODO: Thinking you're doing the 'Mediterranean' diet by only eating pasta and bread",
+    "TODO: Constantly choosing red meat instead of fish",
+    "TODO: Mistaking processed olive oil products for extra virgin olive oil",
+    "TODO: Neglecting portion control",
+    "TODO: Overusing wine (not recommended, water is preferred)"
+  ],
+  "faq": [
+    {
+      "question": "TODO: Can I eat meat on the Mediterranean diet?",
+      "answer": "TODO: Yes, but red meat should be limited to a few portions per month. Fish and poultry are preferred."
+    },
+    {
+      "question": "TODO: Can I use another oil instead of olive oil?",
+      "answer": "TODO: Olive oil is the foundation of the Mediterranean diet. Avocado oil can be considered as an alternative."
+    },
+    {
+      "question": "TODO: Is this diet expensive?",
+      "answer": "TODO: It can be economical when seasonal and local products are preferred. Legumes are an inexpensive protein source."
+    },
+    {
+      "question": "TODO: Can I follow this as a vegetarian?",
+      "answer": "TODO: Yes, you can meet your protein needs with legumes, tofu, and eggs instead of fish."
+    },
+    {
+      "question": "TODO: How long until I see results?",
+      "answer": "TODO: This is a lifestyle. Energy increase can be seen within a few weeks, weight and blood values improvement within a few months."
+    }
+  ],
+  "references": [
+    {
+      "title": "TODO: Mediterranean Diet and Cardiovascular Disease",
+      "url": "TODO: https://example.com/study1",
+      "note": "TODO: Research on heart health"
+    },
+    {
+      "title": "TODO: PREDIMED Study",
+      "url": "TODO: https://example.com/predimed",
+      "note": "TODO: Large clinical study on Mediterranean diet"
+    },
+    {
+      "title": "TODO: WHO Healthy Diet Guidelines",
+      "url": "TODO: https://who.int",
+      "note": "TODO: World Health Organization nutrition recommendations"
+    }
+  ]
+}
