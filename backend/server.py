@@ -558,92 +558,68 @@ def require_mongo():
 # -------------------------
 MEM_SESSIONS: Dict[str, Dict[str, Any]] = {}
 memory_sessions = MEM_SESSIONS  # Alias for OAuth endpoint
-MEM_MEALS: Dict[str, List[Dict[str, Any]]] = {}     # user_id -> [meal list]
 
 # Data retention policy
 DATA_RETENTION_DAYS = 35  # Days to keep data after logout
 
 async def store_create_user(user_doc: Dict[str, Any]):
-  if mongo_db:
+    """Create a new user in MongoDB."""
+    require_mongo()
     await mongo_db.users.insert_one(user_doc)
-  else:
-    MEM_USERS[user_doc["user_id"]] = user_doc
-    MEM_USERS_BY_EMAIL[user_doc["email"]] = user_doc["user_id"]
 
 async def store_get_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
-  if mongo_db:
+    """Get user by ID from MongoDB."""
+    if not mongo_db:
+        return None
     return await mongo_db.users.find_one({"user_id": user_id}, {"_id": 0})
-  return MEM_USERS.get(user_id)
-
 
 async def store_get_user(user_id: str) -> Optional[Dict[str, Any]]:
-  """Backward-compatible alias used by older OAuth code paths."""
-  return await store_get_user_by_id(user_id)
+    """Backward-compatible alias used by older OAuth code paths."""
+    return await store_get_user_by_id(user_id)
 
 async def store_get_user_by_email(email: str) -> Optional[Dict[str, Any]]:
-  if mongo_db:
+    """Get user by email from MongoDB."""
+    if not mongo_db:
+        return None
     return await mongo_db.users.find_one({"email": email}, {"_id": 0})
-  uid = MEM_USERS_BY_EMAIL.get(email)
-  return MEM_USERS.get(uid) if uid else None
 
 async def store_update_user(user_id: str, update: Dict[str, Any]):
-  if mongo_db:
+    """Update user in MongoDB."""
+    require_mongo()
     await mongo_db.users.update_one({"user_id": user_id}, {"$set": update})
-  else:
-    if user_id in MEM_USERS:
-      MEM_USERS[user_id].update(update)
 
 async def store_mark_user_for_deletion(user_id: str):
-  """Mark user for deletion after DATA_RETENTION_DAYS days."""
-  deletion_date = now_utc() + timedelta(days=DATA_RETENTION_DAYS)
-  update = {
-    "scheduled_deletion_at": deletion_date.isoformat(),
-    "logout_at": now_utc().isoformat(),
-  }
-  await store_update_user(user_id, update)
-  logger.info(f"User {user_id} marked for deletion at {deletion_date.isoformat()}")
+    """Mark user for deletion after DATA_RETENTION_DAYS days."""
+    require_mongo()
+    deletion_date = now_utc() + timedelta(days=DATA_RETENTION_DAYS)
+    update = {
+        "scheduled_deletion_at": deletion_date.isoformat(),
+        "logout_at": now_utc().isoformat(),
+    }
+    await store_update_user(user_id, update)
+    logger.info(f"User {user_id} marked for deletion at {deletion_date.isoformat()}")
 
 async def store_cancel_user_deletion(user_id: str):
-  """Cancel scheduled deletion when user logs back in."""
-  if mongo_db:
+    """Cancel scheduled deletion when user logs back in."""
+    require_mongo()
     await mongo_db.users.update_one(
-      {"user_id": user_id}, 
-      {"$unset": {"scheduled_deletion_at": "", "logout_at": ""}}
+        {"user_id": user_id}, 
+        {"$unset": {"scheduled_deletion_at": "", "logout_at": ""}}
     )
-  else:
-    if user_id in MEM_USERS:
-      MEM_USERS[user_id].pop("scheduled_deletion_at", None)
-      MEM_USERS[user_id].pop("logout_at", None)
-  logger.info(f"Deletion cancelled for user {user_id}")
+    logger.info(f"Deletion cancelled for user {user_id}")
 
 async def store_delete_user_data(user_id: str):
-  """Permanently delete all user data."""
-  if mongo_db:
+    """Permanently delete all user data from MongoDB."""
+    require_mongo()
     # Delete all user data
     await mongo_db.meals.delete_many({"user_id": user_id})
     await mongo_db.water.delete_many({"user_id": user_id})
     await mongo_db.steps.delete_many({"user_id": user_id})
     await mongo_db.vitamins.delete_many({"user_id": user_id})
     await mongo_db.user_sessions.delete_many({"user_id": user_id})
-    # Get user email before deleting
-    user = await mongo_db.users.find_one({"user_id": user_id})
+    # Delete user
     await mongo_db.users.delete_one({"user_id": user_id})
     logger.info(f"Permanently deleted all data for user {user_id}")
-  else:
-    # Memory store cleanup
-    if user_id in MEM_USERS:
-      email = MEM_USERS[user_id].get("email")
-      del MEM_USERS[user_id]
-      if email and email in MEM_USERS_BY_EMAIL:
-        del MEM_USERS_BY_EMAIL[email]
-    MEM_MEALS.pop(user_id, None)
-    MEM_WATER.pop(user_id, None)
-    MEM_STEPS.pop(user_id, None)
-    MEM_VITAMINS.pop(user_id, None)
-    # Delete sessions
-    tokens_to_delete = [k for k, v in MEM_SESSIONS.items() if v.get("user_id") == user_id]
-    for token in tokens_to_delete:
-      del MEM_SESSIONS[token]
 
 async def cleanup_expired_users():
   """Delete users whose scheduled_deletion_at has passed (non-premium or expired premium)."""
