@@ -82,6 +82,18 @@ api_router = APIRouter(prefix="/api")
 def health():
   return {"ok": True}
 
+@api_router.get("/debug/storage-status")
+async def storage_status():
+  """Check database connection status and storage type."""
+  return {
+    "storage_type": "mongodb" if mongo_db else "memory",
+    "mongodb_connected": mongo_db is not None,
+    "mongo_url_configured": bool(MONGO_URL),
+    "warning": None if mongo_db else "Using in-memory storage - data will be lost on restart!",
+    "session_count": len(MEM_SESSIONS) if not mongo_db else "check_mongodb",
+    "user_count": len(MEM_USERS) if not mongo_db else "check_mongodb",
+  }
+
 
 # -------------------------
 # GOOGLE OAUTH ENDPOINTS
