@@ -105,7 +105,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  // Handle auth failure from API (401 responses)
+  const handleAuthFailure = () => {
+    console.log('[Auth] Auth failure callback triggered');
+    setIsAuthenticated(false);
+    setUser(null);
+    setNeedsOnboarding(false);
+    resetStore();
+  };
+
   useEffect(() => {
+    // Set up auth failure callback
+    setOnAuthFailure(handleAuthFailure);
+    
     checkExistingSession();
     
     // Handle deep links (cold start)
