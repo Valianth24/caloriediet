@@ -141,7 +141,7 @@ async def storage_status():
     """Check MongoDB connection status and configuration."""
     # Test actual connection
     actual_connected = False
-    if mongo_db:
+    if mongo_db is not None:
         try:
             # Ping the database to verify connection
             await mongo_db.command("ping")
