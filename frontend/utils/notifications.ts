@@ -24,18 +24,20 @@ export const getNotifications = () => {
   try {
     _notifications = require('expo-notifications');
     
-    // Setup notification handler
+    // Setup notification handler - MUST enable sound and alert
     _notifications.setNotificationHandler({
       handleNotification: async () => ({
         shouldShowAlert: true,
         shouldPlaySound: true,
         shouldSetBadge: true,
+        priority: 'high',
       }),
     });
     
+    console.log('[Notifications] Module initialized successfully');
     return _notifications;
   } catch (error) {
-    console.log('[Notifications] Module not available');
+    console.log('[Notifications] Module not available:', error);
     _notificationsAvailable = false;
     return null;
   }
