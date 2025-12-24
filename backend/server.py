@@ -555,17 +555,30 @@ async def get_current_user(request: Request) -> Optional[User]:
 
   session = await store_get_session(session_token)
   if not session:
+    logger.debug(f"Session not found: {session_token[:20]}...")
     return None
 
+  # Check session expiry
   expires_at = session.get("expires_at")
-  if isinstance(expires_at, datetime):
-    if expires_at.tzinfo is None:
-      expires_at = expires_at.replace(tzinfo=timezone.utc)
-    if expires_at < now_utc():
-      return None
+  if expires_at:
+    # Handle both datetime and string formats
+    if isinstance(expires_at, str):
+      try:
+        expires_at = datetime.fromisoformat(expires_at.replace('Z', '+00:00'))
+      except:
+        expires_at = None
+    
+    if isinstance(expires_at, datetime):
+      if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+      if expires_at < now_utc():
+        logger.info(f"Session expired for token: {session_token[:20]}...")
+        await store_delete_session(session_token)
+        return None
 
   user_doc = await store_get_user_by_id(session["user_id"])
   if not user_doc:
+    logger.warning(f"User not found for session: {session['user_id']}")
     return None
 
   return User(**user_doc)
