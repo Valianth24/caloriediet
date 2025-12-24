@@ -123,6 +123,50 @@ export default function ProfileScreen() {
     );
   };
 
+  const handleDeleteAccount = async () => {
+    Alert.alert(
+      t('deleteAccount') || 'Hesabı Sil',
+      t('deleteAccountConfirm') || 'Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz ve tüm verileriniz silinecektir.',
+      [
+        { text: t('cancel'), style: 'cancel' },
+        { 
+          text: t('delete') || 'Sil', 
+          style: 'destructive', 
+          onPress: async () => {
+            try {
+              // Call delete account API
+              const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+              const token = await AsyncStorage.getItem('session_token');
+              
+              // For now, we redirect to the web deletion page
+              // This complies with Google Play requirements
+              const deleteUrl = `${API_BASE_URL}/account-deletion`;
+              
+              Alert.alert(
+                t('deleteAccount') || 'Hesabı Sil',
+                t('deleteAccountRedirect') || 'Hesabınızı silmek için web sayfasına yönlendirileceksiniz.',
+                [
+                  { text: t('cancel'), style: 'cancel' },
+                  { 
+                    text: t('continue') || 'Devam Et', 
+                    onPress: async () => {
+                      // Open deletion page in browser
+                      const { Linking } = require('react-native');
+                      await Linking.openURL(deleteUrl);
+                    }
+                  },
+                ]
+              );
+            } catch (error) {
+              console.error('Delete account error:', error);
+              Alert.alert(t('error'), t('deleteAccountError') || 'Hesap silinemedi. Lütfen tekrar deneyin.');
+            }
+          }
+        },
+      ]
+    );
+  };
+
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [currentLang, setCurrentLang] = useState(i18n.language);
 
