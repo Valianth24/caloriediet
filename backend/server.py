@@ -1399,7 +1399,8 @@ async def analyze_food_v2(request_data: FoodAnalyzeRequest, current_user: Option
     if not current_user:
         raise HTTPException(status_code=401, detail="Not authenticated")
     
-    if not OPENAI_API_KEY:
+    api_key = get_openai_api_key()
+    if not api_key:
         raise HTTPException(status_code=503, detail="OpenAI API key not configured")
     
     try:
@@ -1420,6 +1421,27 @@ async def analyze_food_v2(request_data: FoodAnalyzeRequest, current_user: Option
     except Exception as e:
         logger.error(f"Food analyze v2 error: {e}")
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
+
+# Debug endpoint to check OpenAI key status
+@api_router.get("/debug/openai-status")
+async def check_openai_status():
+    """Check if OpenAI API key is configured (for debugging)."""
+    api_key = get_openai_api_key()
+    if api_key:
+        return {
+            "configured": True,
+            "key_length": len(api_key),
+            "key_prefix": api_key[:7] + "..." if len(api_key) > 7 else "too_short",
+            "model_primary": VISION_MODEL_PRIMARY,
+            "model_fallback": VISION_MODEL_FALLBACK,
+        }
+    else:
+        return {
+            "configured": False,
+            "error": "OPENAI_KEY or OPENAI_API_KEY environment variable not found",
+            "hint": "Set OPENAI_KEY=sk-your-key in Render environment variables"
+        }
 
 
 # -------------------------
