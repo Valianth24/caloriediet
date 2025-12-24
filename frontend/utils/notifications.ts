@@ -108,14 +108,19 @@ export const ensureAndroidChannel = async () => {
     try {
       await Notifications.setNotificationChannelAsync(REMINDER_CHANNEL_ID, {
         name: 'Diet Reminders',
-        importance: Notifications.AndroidImportance.HIGH,
+        description: 'Su ve vitamin hatırlatıcıları',
+        importance: Notifications.AndroidImportance?.MAX || 5, // MAX importance for sound
         sound: 'default',
         enableVibrate: true,
+        vibrationPattern: [0, 250, 250, 250],
+        enableLights: true,
+        lightColor: '#4CAF50',
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PUBLIC || 1,
+        bypassDnd: false,
       });
+      console.log('[Notifications] Android channel created/updated');
     } catch (error) {
-      if (__DEV__) {
-        console.log('[Notifications] Channel creation error:', error);
-      }
+      console.log('[Notifications] Channel creation error:', error);
     }
   }
 };
