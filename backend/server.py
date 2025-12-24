@@ -72,12 +72,6 @@ load_dotenv(ROOT_DIR / ".env")
 
 EMERGENT_LLM_KEY = os.getenv("EMERGENT_LLM_KEY", "").strip()
 
-logging.basicConfig(
-  level=logging.INFO,
-  format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-logger = logging.getLogger("backend")
-
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
