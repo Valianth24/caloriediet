@@ -1192,11 +1192,17 @@ def resize_image_base64(base64_str: str, max_size: int = 1280) -> str:
 async def call_openai_vision(image_base64: str, locale: str = "tr-TR", use_fallback: bool = False) -> Dict[str, Any]:
     """Call OpenAI Vision API to analyze food image."""
     
-    if not OPENAI_API_KEY:
-        raise HTTPException(status_code=503, detail="OpenAI API key not configured (set OPENAI_KEY or OPENAI_API_KEY)")
+    api_key = get_openai_api_key()
+    if not api_key:
+        logger.error("OpenAI API key not found in environment variables (OPENAI_KEY or OPENAI_API_KEY)")
+        raise HTTPException(status_code=503, detail="OpenAI API key not configured. Please set OPENAI_KEY environment variable.")
+    
+    # Log key presence (not the actual key!)
+    logger.info(f"OpenAI API key found, length: {len(api_key)}, starts with: {api_key[:7]}...")
     
     # Choose model
     model = VISION_MODEL_FALLBACK if use_fallback else VISION_MODEL_PRIMARY
+    logger.info(f"Using model: {model}")
     
     # Resize image to reduce costs
     resized_base64 = resize_image_base64(image_base64)
@@ -1251,7 +1257,7 @@ Her yiyeceği tespit et ve besin değerlerini tahmin et. Porsiyon büyüklüğü
 Kesin JSON formatında yanıt ver."""
 
     try:
-        client = openai.AsyncOpenAI(api_key=OPENAI_API_KEY)
+        client = openai.AsyncOpenAI(api_key=api_key)
         
         response = await client.chat.completions.create(
             model=model,
