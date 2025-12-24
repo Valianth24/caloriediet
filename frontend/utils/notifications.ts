@@ -186,34 +186,62 @@ export const syncReminderNotifications = async ({ type, enabled, times, content 
       if (!Number.isFinite(hour) || !Number.isFinite(minute)) continue;
 
       try {
+        // Use DailyTriggerInput for daily repeating notifications at specific time
+        const trigger: any = {
+          type: 'daily',
+          hour,
+          minute,
+        };
+
+        // For Android, add channel
+        if (Platform.OS === 'android') {
+          trigger.channelId = REMINDER_CHANNEL_ID;
+        }
+
         const id = await Notifications.scheduleNotificationAsync({
           content: {
-            ...content,
-            sound: content.sound ? 'default' : undefined,
+            title: content.title,
+            body: content.body,
+            sound: true, // Always enable sound
+            priority: Notifications.AndroidNotificationPriority?.HIGH || 'high',
+            vibrate: [0, 250, 250, 250], // Vibration pattern
           },
-          trigger: {
-            hour,
-            minute,
-            repeats: true,
-            channelId: REMINDER_CHANNEL_ID,
-          },
+          trigger,
         });
 
         ids.push(id);
+        console.log(`[Notifications] Scheduled ${type} reminder at ${time}, id: ${id}`);
       } catch (scheduleError) {
-        if (__DEV__) {
-          console.log('[Notifications] Schedule error for', time, ':', scheduleError);
+        console.log('[Notifications] Schedule error for', time, ':', scheduleError);
+        
+        // Fallback: try with simpler trigger format
+        try {
+          const fallbackId = await Notifications.scheduleNotificationAsync({
+            content: {
+              title: content.title,
+              body: content.body,
+              sound: true,
+            },
+            trigger: {
+              hour,
+              minute,
+              repeats: true,
+            },
+          });
+          ids.push(fallbackId);
+          console.log(`[Notifications] Fallback scheduled at ${time}, id: ${fallbackId}`);
+        } catch (fallbackError) {
+          console.log('[Notifications] Fallback also failed:', fallbackError);
         }
       }
     }
 
     if (ids.length) {
       await AsyncStorage.setItem(REMINDER_NOTIFICATION_KEYS[type], JSON.stringify(ids));
+      console.log(`[Notifications] Saved ${ids.length} notification IDs for ${type}`);
     }
   } catch (error) {
-    if (__DEV__) {
-      console.log('[Notifications] Sync error:', error);
-    }
+    console.log('[Notifications] Sync error:', error);
   }
 };
 
