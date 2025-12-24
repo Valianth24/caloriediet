@@ -700,7 +700,7 @@ async def store_get_session(session_token: str) -> Optional[Dict[str, Any]]:
 
 async def store_delete_session(session_token: str):
     """Delete session from MongoDB."""
-    if mongo_db:
+    if mongo_db is not None:
         await mongo_db.user_sessions.delete_one({"session_token": session_token})
     MEM_SESSIONS.pop(session_token, None)
 
