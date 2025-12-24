@@ -1701,26 +1701,22 @@ class ManualStepsRequest(BaseModel):
 
 
 async def get_user_steps(user_id: str, date: Optional[str] = None) -> Optional[Dict[str, Any]]:
-  target_date = date or today_str()
-  if mongo_db:
+    """Get user steps from MongoDB."""
+    if not mongo_db:
+        return None
+    target_date = date or today_str()
     return await mongo_db.steps.find_one({"user_id": user_id, "date": target_date}, {"_id": 0})
-  else:
-    user_steps = MEM_STEPS.get(user_id, {})
-    return user_steps.get(target_date)
 
 
 async def upsert_user_steps(user_id: str, steps_data: Dict[str, Any]):
-  date = steps_data.get("date", today_str())
-  if mongo_db:
+    """Upsert steps to MongoDB."""
+    require_mongo()
+    date = steps_data.get("date", today_str())
     await mongo_db.steps.update_one(
-      {"user_id": user_id, "date": date},
-      {"$set": steps_data},
-      upsert=True
+        {"user_id": user_id, "date": date},
+        {"$set": steps_data},
+        upsert=True
     )
-  else:
-    if user_id not in MEM_STEPS:
-      MEM_STEPS[user_id] = {}
-    MEM_STEPS[user_id][date] = steps_data
 
 
 @api_router.post("/steps/sync")
