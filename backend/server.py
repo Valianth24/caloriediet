@@ -102,9 +102,6 @@ except Exception:
     UserMessage = None
     ImageContent = None
 
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / ".env")
-
 EMERGENT_LLM_KEY = os.getenv("EMERGENT_LLM_KEY", "").strip()
 
 app = FastAPI()
