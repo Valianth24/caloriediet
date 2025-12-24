@@ -452,13 +452,14 @@ class CalorieDietAPITester:
             
             if response.status_code == 200:
                 data = response.json()
-                if isinstance(data, list):
+                if "vitamins" in data and "taken_count" in data:
+                    vitamins = data["vitamins"]
+                    taken_count = data["taken_count"]
                     self.log_test("Get Today Vitamins", True, 
-                                f"Today's vitamins: {len(data)} entries", 
-                                {"count": len(data)})
+                                f"Today's vitamins: {len(vitamins)} total, {taken_count} taken", data)
                 else:
                     self.log_test("Get Today Vitamins", False, 
-                                "Invalid response format - expected list")
+                                "Invalid response format - missing required fields", data)
             else:
                 self.log_test("Get Today Vitamins", False, 
                             f"HTTP {response.status_code}: {response.text}")
