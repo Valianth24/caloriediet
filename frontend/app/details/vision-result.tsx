@@ -17,9 +17,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
 const { width: screenWidth } = Dimensions.get('window');
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || '';
+
+// Get backend URL from app.config.js extra or environment
+const API_BASE_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL 
+  || process.env.EXPO_PUBLIC_BACKEND_URL 
+  || 'https://caloriediet-backend.onrender.com';
 
 interface DetectedItem {
   label: string;
