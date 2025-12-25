@@ -20,6 +20,12 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import i18n, { languageList, changeLanguage } from '../../utils/i18n';
 import ThemeSelector from '../../components/ThemeSelector';
+import Constants from 'expo-constants';
+
+// Get backend URL from app.config.js extra or environment
+const API_BASE_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL 
+  || process.env.EXPO_PUBLIC_BACKEND_URL 
+  || 'https://caloriediet-backend.onrender.com';
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
