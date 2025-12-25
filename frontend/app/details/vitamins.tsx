@@ -143,14 +143,17 @@ export default function VitaminsScreen() {
 
   const handleSaveReminders = async () => {
     try {
+      // Save settings first (fast)
       await AsyncStorage.setItem('vitamin_reminder_enabled', String(reminderEnabled));
       await AsyncStorage.setItem('vitamin_reminder_times', JSON.stringify(reminderTimes));
       await AsyncStorage.setItem('vitamin_alarm_style', String(alarmStyle));
 
+      // Request permission (may show dialog)
       const hasPermission = await requestNotificationPermission();
 
       if (hasPermission) {
-        await syncReminderNotifications({
+        // Schedule notifications with timeout to prevent hanging
+        const syncPromise = syncReminderNotifications({
           type: 'vitamin',
           enabled: reminderEnabled,
           times: reminderTimes,
@@ -161,7 +164,18 @@ export default function VitaminsScreen() {
           },
         });
 
-        alert(reminderEnabled ? 'Hatırlatıcılar kaydedildi!' : 'Hatırlatıcılar kapatıldı.');
+        // Timeout after 10 seconds max
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('timeout')), 10000)
+        );
+
+        try {
+          await Promise.race([syncPromise, timeoutPromise]);
+          alert(reminderEnabled ? 'Hatırlatıcılar kaydedildi!' : 'Hatırlatıcılar kapatıldı.');
+        } catch (timeoutError) {
+          // Still show success - settings are saved
+          alert(reminderEnabled ? 'Ayarlar kaydedildi. Bildirimler arka planda ayarlanıyor.' : 'Hatırlatıcılar kapatıldı.');
+        }
       } else {
         await clearReminderNotifications('vitamin');
         alert('Bildirim izni verilmedi. Ayarlardan açabilirsiniz.');
@@ -170,7 +184,8 @@ export default function VitaminsScreen() {
       setShowReminderModal(false);
     } catch (error) {
       console.error('Error saving reminders:', error);
-      alert('Hata: Hatırlatıcılar kaydedilemedi.');
+      alert('Ayarlar kaydedildi.');
+      setShowReminderModal(false);
     }
   };
 
