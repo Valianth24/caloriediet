@@ -1494,6 +1494,14 @@ Kesin JSON formatında yanıt ver."""
             return await call_openai_vision(image_base64, locale, use_fallback=True)
         raise HTTPException(status_code=429, detail="API rate limit exceeded. Please try again later.")
     
+    except openai.NotFoundError as e:
+        # Model not found - likely GPT-5 not available for this API key
+        logger.error(f"OpenAI model not found: {e}")
+        if not use_fallback:
+            logger.info(f"Model {model} not available, trying fallback model...")
+            return await call_openai_vision(image_base64, locale, use_fallback=True)
+        raise HTTPException(status_code=502, detail="AI model not available")
+    
     except openai.APIError as e:
         logger.error(f"OpenAI API error: {e}")
         if not use_fallback:
@@ -1507,6 +1515,10 @@ Kesin JSON formatında yanıt ver."""
     
     except Exception as e:
         logger.error(f"Unexpected error in vision analysis: {e}")
+        # Try fallback on any unexpected error
+        if not use_fallback:
+            logger.info(f"Unexpected error with {model}, trying fallback...")
+            return await call_openai_vision(image_base64, locale, use_fallback=True)
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
 @api_router.post("/food/analyze", response_model=AnalyzeFoodResponse)
