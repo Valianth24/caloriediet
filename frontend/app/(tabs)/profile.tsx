@@ -157,7 +157,6 @@ export default function ProfileScreen() {
           style: 'destructive', 
           onPress: async () => {
             try {
-              const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
               const token = await AsyncStorage.getItem('session_token');
               
               const response = await fetch(`${API_BASE_URL}/api/auth/account`, {
