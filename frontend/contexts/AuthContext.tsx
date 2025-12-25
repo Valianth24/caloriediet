@@ -18,7 +18,9 @@ if (Platform.OS === 'android') {
 }
 
 // Configuration from environment
-const BACKEND_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || process.env.EXPO_PUBLIC_BACKEND_URL || '';
+const BACKEND_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL 
+  || process.env.EXPO_PUBLIC_BACKEND_URL 
+  || 'https://caloriediet-backend.onrender.com';
 
 // OAuth configuration - use our own backend for OAuth
 // This points to /auth/v1/env/oauth/redirect endpoint on our backend
