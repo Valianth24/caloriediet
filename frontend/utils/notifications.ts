@@ -191,55 +191,49 @@ export const syncReminderNotifications = async ({ type, enabled, times, content 
       const [hour, minute] = time.split(':').map(Number);
 
       if (!Number.isFinite(hour) || !Number.isFinite(minute)) continue;
+      if (hour < 0 || hour > 23 || minute < 0 || minute > 59) continue;
 
       try {
-        // Use DailyTriggerInput for daily repeating notifications at specific time
-        const trigger: any = {
-          type: 'daily',
-          hour,
-          minute,
+        // Create a promise with timeout to prevent hanging
+        const scheduleWithTimeout = async () => {
+          return new Promise<string | null>(async (resolve) => {
+            // Timeout after 5 seconds
+            const timeoutId = setTimeout(() => {
+              console.log(`[Notifications] Timeout scheduling ${time}`);
+              resolve(null);
+            }, 5000);
+
+            try {
+              // Simple trigger format that works in Expo Go
+              const id = await Notifications.scheduleNotificationAsync({
+                content: {
+                  title: content.title,
+                  body: content.body,
+                  sound: true,
+                },
+                trigger: {
+                  hour,
+                  minute,
+                  repeats: true,
+                },
+              });
+              clearTimeout(timeoutId);
+              resolve(id);
+            } catch (err) {
+              clearTimeout(timeoutId);
+              console.log('[Notifications] Schedule error:', err);
+              resolve(null);
+            }
+          });
         };
 
-        // For Android, add channel
-        if (Platform.OS === 'android') {
-          trigger.channelId = REMINDER_CHANNEL_ID;
+        const id = await scheduleWithTimeout();
+        if (id) {
+          ids.push(id);
+          console.log(`[Notifications] Scheduled ${type} reminder at ${time}, id: ${id}`);
         }
-
-        const id = await Notifications.scheduleNotificationAsync({
-          content: {
-            title: content.title,
-            body: content.body,
-            sound: true, // Always enable sound
-            priority: Notifications.AndroidNotificationPriority?.HIGH || 'high',
-            vibrate: [0, 250, 250, 250], // Vibration pattern
-          },
-          trigger,
-        });
-
-        ids.push(id);
-        console.log(`[Notifications] Scheduled ${type} reminder at ${time}, id: ${id}`);
       } catch (scheduleError) {
         console.log('[Notifications] Schedule error for', time, ':', scheduleError);
-        
-        // Fallback: try with simpler trigger format
-        try {
-          const fallbackId = await Notifications.scheduleNotificationAsync({
-            content: {
-              title: content.title,
-              body: content.body,
-              sound: true,
-            },
-            trigger: {
-              hour,
-              minute,
-              repeats: true,
-            },
-          });
-          ids.push(fallbackId);
-          console.log(`[Notifications] Fallback scheduled at ${time}, id: ${fallbackId}`);
-        } catch (fallbackError) {
-          console.log('[Notifications] Fallback also failed:', fallbackError);
-        }
       }
     }
 
