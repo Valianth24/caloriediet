@@ -1315,11 +1315,12 @@ def get_openai_api_key():
     key = key.strip('"').strip("'")
     return key if key else None
 
-# Model configuration for diet app - Using GPT-5 nano for cost-effective food analysis
+# Model configuration for diet app
+# Try GPT-5 nano first (if available), fallback to GPT-4o-mini
 # GPT-5 nano: 400K context, 128K output, fastest & cheapest GPT-5 variant
-# Perfect for classification/summarization tasks like food analysis
-VISION_MODEL_PRIMARY = os.getenv("OPENAI_MODEL", "gpt-5-nano")  # Cost-effective for food analysis
-VISION_MODEL_FALLBACK = "gpt-5-mini"  # More accurate for difficult images
+# GPT-4o-mini: Reliable fallback for accounts without GPT-5 access
+VISION_MODEL_PRIMARY = os.getenv("OPENAI_MODEL", "gpt-5-nano")
+VISION_MODEL_FALLBACK = os.getenv("OPENAI_MODEL_FALLBACK", "gpt-4o-mini")  # Safe fallback
 
 class FoodItem(BaseModel):
     name: str
