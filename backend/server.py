@@ -1474,7 +1474,7 @@ Kesin JSON formatında yanıt ver."""
                     ]
                 }
             ],
-            max_tokens=1500,
+            max_completion_tokens=1500,  # GPT-5 uses max_completion_tokens instead of max_tokens
             temperature=0.3,
             response_format={"type": "json_object"}
         )
