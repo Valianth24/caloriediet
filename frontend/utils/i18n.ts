@@ -570,6 +570,13 @@ const resources = {
       noDietsSubtext: 'Hazır diyetlerimize göz atın veya kendi diyetinizi oluşturun',
       goToDiets: 'Diyetlere Git',
       
+      // Tarif Kitapçığı
+      recipeBook: 'Tarif Kitapçığı',
+      recipeBookSubtitle: 'Sağlıklı ve lezzetli tarifler keşfedin',
+      discoverRecipes: 'Tarifleri Keşfet',
+      recipeBookDescription: 'Diyet dostu, pratik ve lezzetli tarifler',
+      viewRecipes: 'Tariflere Git',
+      
       dailyCalories: 'Günlük Kalori',
       calories: 'Kalori',
       kcal: 'kcal',
