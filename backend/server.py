@@ -1456,9 +1456,13 @@ Kesin JSON formatında yanıt ver."""
     try:
         client = openai.AsyncOpenAI(api_key=api_key)
         
-        response = await client.chat.completions.create(
-            model=model,
-            messages=[
+        # GPT-5 models have different parameter requirements
+        is_gpt5 = model.startswith("gpt-5")
+        
+        # Build request parameters based on model
+        request_params = {
+            "model": model,
+            "messages": [
                 {"role": "system", "content": system_prompt},
                 {
                     "role": "user",
@@ -1474,10 +1478,19 @@ Kesin JSON formatında yanıt ver."""
                     ]
                 }
             ],
-            max_completion_tokens=1500,  # GPT-5 uses max_completion_tokens instead of max_tokens
-            temperature=0.3,
-            response_format={"type": "json_object"}
-        )
+            "response_format": {"type": "json_object"}
+        }
+        
+        # GPT-5 uses max_completion_tokens, GPT-4 uses max_tokens
+        # GPT-5 only supports temperature=1
+        if is_gpt5:
+            request_params["max_completion_tokens"] = 1500
+            # temperature not supported for gpt-5-nano, skip it
+        else:
+            request_params["max_tokens"] = 1500
+            request_params["temperature"] = 0.3
+        
+        response = await client.chat.completions.create(**request_params)
         
         # Parse response
         content = response.choices[0].message.content
