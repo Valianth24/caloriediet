@@ -1320,7 +1320,7 @@ def get_openai_api_key():
 # GPT-5 nano: 400K context, 128K output, fastest & cheapest GPT-5 variant
 # GPT-4o-mini: Reliable fallback for accounts without GPT-5 access
 VISION_MODEL_PRIMARY = os.getenv("OPENAI_MODEL", "gpt-5-nano")
-VISION_MODEL_FALLBACK = os.getenv("OPENAI_MODEL_FALLBACK", "gpt-4o-mini")  # Safe fallback
+VISION_MODEL_FALLBACK = os.getenv("OPENAI_MODEL_FALLBACK", "gpt-4o-mini")  # gpt-4o-mini as safe fallback
 
 class FoodItem(BaseModel):
     name: str
