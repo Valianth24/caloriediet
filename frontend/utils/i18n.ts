@@ -159,6 +159,13 @@ const resources = {
       noDietsSubtext: 'Browse our ready diets or create your own',
       goToDiets: 'Go to Diets',
       
+      // Recipe Book
+      recipeBook: 'Recipe Book',
+      recipeBookSubtitle: 'Discover healthy and delicious recipes',
+      discoverRecipes: 'Discover Recipes',
+      recipeBookDescription: 'Diet-friendly, practical and delicious recipes',
+      viewRecipes: 'View Recipes',
+      
       // Calories
       dailyCalories: 'Daily Calories',
       calories: 'Calories',
