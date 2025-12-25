@@ -11,7 +11,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 
 # Backend URL from frontend/.env
-BACKEND_URL = "https://7c5ee9e3-e863-4c3d-9335-d3634737ee84.preview.emergentagent.com/api"
+BACKEND_URL = "https://dev-tracker-18.preview.emergentagent.com/api"
 
 class CalorieDietAPITester:
     def __init__(self):
