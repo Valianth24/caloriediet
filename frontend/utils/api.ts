@@ -4,9 +4,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Backend URL configuration with fallbacks
 const BACKEND_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL 
   || process.env.EXPO_PUBLIC_BACKEND_URL 
-  || '';
+  || 'https://caloriediet-backend.onrender.com';
 
-const API_URL = BACKEND_URL ? `${BACKEND_URL}/api` : '/api';
+const API_URL = `${BACKEND_URL}/api`;
 
 // Callback for handling auth failures (set by AuthContext)
 let onAuthFailure: (() => void) | null = null;
