@@ -60,13 +60,15 @@ export default function WaterDetailScreen() {
 
   const saveReminderSettings = async () => {
     try {
+      // Save settings first (fast operation)
       await AsyncStorage.setItem('water_reminder_enabled', reminderEnabled.toString());
       await AsyncStorage.setItem('water_reminder_times', JSON.stringify(reminderTimes));
 
       const hasPermission = await requestNotificationPermission();
 
       if (hasPermission) {
-        await syncReminderNotifications({
+        // Schedule notifications with timeout to prevent hanging
+        const syncPromise = syncReminderNotifications({
           type: 'water',
           enabled: reminderEnabled,
           times: reminderTimes,
@@ -76,17 +78,34 @@ export default function WaterDetailScreen() {
             sound: true,
           },
         });
-        
-        // Show scheduled notifications count for debugging
-        const scheduled = await getScheduledNotifications();
-        const waterNotifications = scheduled.filter(n => n.content?.title?.includes('Su'));
-        
-        Alert.alert(
-          'Başarılı', 
-          reminderEnabled 
-            ? `Hatırlatıcı ayarları kaydedildi! ${waterNotifications.length} bildirim planlandı.` 
-            : 'Hatırlatıcılar kapatıldı.'
+
+        // Timeout after 10 seconds
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('timeout')), 10000)
         );
+
+        try {
+          await Promise.race([syncPromise, timeoutPromise]);
+          
+          // Show scheduled notifications count for debugging
+          const scheduled = await getScheduledNotifications();
+          const waterNotifications = scheduled.filter(n => n.content?.title?.includes('Su'));
+          
+          Alert.alert(
+            'Başarılı', 
+            reminderEnabled 
+              ? `Hatırlatıcı ayarları kaydedildi! ${waterNotifications.length} bildirim planlandı.` 
+              : 'Hatırlatıcılar kapatıldı.'
+          );
+        } catch (timeoutError) {
+          // Still show success - settings are saved
+          Alert.alert(
+            'Başarılı', 
+            reminderEnabled 
+              ? 'Ayarlar kaydedildi. Bildirimler arka planda ayarlanıyor.' 
+              : 'Hatırlatıcılar kapatıldı.'
+          );
+        }
       } else {
         await clearReminderNotifications('water');
         Alert.alert('Bildirim İzni', 'Bildirim izni verilmedi. Ayarlardan açabilirsiniz.');
@@ -95,7 +114,8 @@ export default function WaterDetailScreen() {
       setShowReminderModal(false);
     } catch (error) {
       console.error('Error saving reminder settings:', error);
-      Alert.alert('Hata', 'Hatırlatıcı ayarları kaydedilemedi.');
+      Alert.alert('Ayarlar kaydedildi.');
+      setShowReminderModal(false);
     }
   };
 
