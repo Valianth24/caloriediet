@@ -391,6 +391,34 @@ export default function DashboardScreen() {
               </View>
             </TouchableOpacity>
           </View>
+
+          {/* Recipe Book Section */}
+          <View style={styles.recipeBookSection}>
+            <View style={styles.recipeBookHeader}>
+              <Ionicons name="book" size={24} color={Colors.primary} />
+              <Text style={styles.recipeBookTitle}>{t('recipeBook') || 'Tarif Kitapçığı'}</Text>
+            </View>
+            <Text style={styles.recipeBookSubtitle}>
+              {t('recipeBookSubtitle') || 'Sağlıklı ve lezzetli tarifler keşfedin'}
+            </Text>
+            
+            <TouchableOpacity
+              style={styles.recipeBookCard}
+              onPress={() => router.push('/details/recipes')}
+            >
+              <View style={styles.recipeBookIconContainer}>
+                <Ionicons name="restaurant" size={48} color={Colors.primary} />
+              </View>
+              <Text style={styles.recipeBookText}>{t('discoverRecipes') || 'Tarifleri Keşfet'}</Text>
+              <Text style={styles.recipeBookSubtext}>
+                {t('recipeBookDescription') || 'Diyet dostu, pratik ve lezzetli tarifler'}
+              </Text>
+              <View style={styles.recipeBookButton}>
+                <Text style={styles.recipeBookButtonText}>{t('viewRecipes') || 'Tariflere Git'}</Text>
+                <Ionicons name="arrow-forward" size={20} color={Colors.primary} />
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
 
