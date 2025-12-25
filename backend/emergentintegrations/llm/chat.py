@@ -68,7 +68,7 @@ class LlmChat:
         self.session_id = session_id
         self.system_message = system_message or ""
         self.provider = "openai"
-        self.model = "gpt-4o-mini"
+        self.model = "gpt-5-nano"  # Updated to GPT-5 nano - fastest & cheapest GPT-5 variant
 
     def with_model(self, provider: str, model: str) -> "LlmChat":
         self.provider = provider
