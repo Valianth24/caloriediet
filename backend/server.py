@@ -1280,9 +1280,28 @@ async def get_daily_summary(current_user: Optional[User] = Depends(get_current_u
   }
 
 
-# -------------------------
-# FOOD ANALYZE (OpenAI Vision)
-# -------------------------
+@api_router.delete("/food/meal/{meal_id}")
+async def delete_meal(meal_id: str, current_user: Optional[User] = Depends(get_current_user)):
+  """Delete a specific meal by ID."""
+  if not current_user:
+    raise HTTPException(status_code=401, detail="Not authenticated")
+  
+  if mongo_db is not None:
+    result = await mongo_db.meals.delete_one({
+      "meal_id": meal_id,
+      "user_id": current_user.user_id
+    })
+    if result.deleted_count == 0:
+      raise HTTPException(status_code=404, detail="Meal not found")
+  else:
+    # In-memory fallback
+    global memory_meals
+    original_len = len(memory_meals)
+    memory_meals = [m for m in memory_meals if not (m.get("meal_id") == meal_id and m.get("user_id") == current_user.user_id)]
+    if len(memory_meals) == original_len:
+      raise HTTPException(status_code=404, detail="Meal not found")
+  
+  return {"message": "Meal deleted", "meal_id": meal_id}
 import openai
 from PIL import Image
 import io
