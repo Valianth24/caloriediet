@@ -23,9 +23,14 @@ import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import PremiumPaywall from '../../components/PremiumPaywall';
 import { activatePremium } from '../../utils/api';
+import Constants from 'expo-constants';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+
+// Get backend URL from app.config.js extra or environment
+const API_BASE_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL 
+  || process.env.EXPO_PUBLIC_BACKEND_URL 
+  || 'https://caloriediet-backend.onrender.com';
 
 type DetectedItem = {
   label: string;
