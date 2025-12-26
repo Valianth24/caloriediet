@@ -450,13 +450,13 @@ export default function OnboardingScreen() {
     );
   }
 
-  // Age Step - Enhanced with AgeWheelPicker
+  // Age Step - Enhanced with EnhancedAgePicker
   if (step === 'age') {
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView 
           style={{ flex: 1 }} 
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.stepContainer}>
@@ -468,8 +468,14 @@ export default function OnboardingScreen() {
               <Text style={styles.backBtnText}>←</Text>
             </TouchableOpacity>
             
+            <View style={styles.advancedPickerHeader}>
+              <Text style={styles.stepEmoji}>🎂</Text>
+              <Text style={styles.stepTitle}>{t('howOldAreYou')}</Text>
+              <Text style={styles.stepSubtitle}>{t('ageHelpsCalculate')}</Text>
+            </View>
+            
             <View style={styles.agePickerContainer}>
-              <AgeWheelPicker
+              <EnhancedAgePicker
                 minAge={10}
                 maxAge={100}
                 initialAge={parseInt(formData.age) || 25}
@@ -493,7 +499,7 @@ export default function OnboardingScreen() {
     );
   }
 
-  // Height Step - Enhanced with AdvancedRulerPicker
+  // Height Step - Enhanced with EnhancedRulerPicker
   if (step === 'height') {
     return (
       <SafeAreaView style={styles.container}>
