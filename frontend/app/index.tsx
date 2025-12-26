@@ -1,9 +1,12 @@
 import { Text, View, StyleSheet, Image } from "react-native";
+import Constants from 'expo-constants';
 
-const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+const BACKEND_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_BACKEND_URL || '';
 
 export default function Index() {
-  console.log(EXPO_PUBLIC_BACKEND_URL, "EXPO_PUBLIC_BACKEND_URL");
+  if (__DEV__) {
+    console.log('[Index] Backend URL:', BACKEND_URL);
+  }
 
   return (
     <View style={styles.container}>

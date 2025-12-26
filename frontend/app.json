@@ -1,22 +1,56 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "CalorieDiet",
+    "slug": "caloriediet",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "frontend",
+    "scheme": "caloriediet",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.caloriediet.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "CalorieDiet needs camera access to take photos of your meals for calorie analysis.",
+        "NSPhotoLibraryUsageDescription": "CalorieDiet needs photo library access to select meal photos for calorie analysis.",
+        "NSMotionUsageDescription": "CalorieDiet uses motion sensors to count your daily steps."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#000"
+        "backgroundColor": "#4CAF50"
       },
-      "edgeToEdgeEnabled": true
+      "package": "com.caloriediet.app",
+      "versionCode": 1,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "ACTIVITY_RECOGNITION",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "caloriediet",
+              "host": "auth"
+            },
+            {
+              "scheme": "caloriediet",
+              "host": "*"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -25,18 +59,37 @@
     },
     "plugins": [
       "expo-router",
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "CalorieDiet needs access to your photos to analyze meal calories.",
+          "cameraPermission": "CalorieDiet needs camera access to take photos of your meals."
+        }
+      ],
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "CalorieDiet uses motion sensors to track your daily steps."
+        }
+      ],
       [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#000"
+          "backgroundColor": "#4CAF50"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "08f09138-e552-4b33-b32c-b3851801bc50"
+      }
     }
   }
 }

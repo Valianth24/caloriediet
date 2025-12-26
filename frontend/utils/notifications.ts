@@ -1,0 +1,307 @@
+import { Platform, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
+
+const REMINDER_CHANNEL_ID = 'diet-reminders';
+const REMINDER_NOTIFICATION_KEYS: Record<'water' | 'vitamin', string> = {
+  water: 'water_reminder_notification_ids',
+  vitamin: 'vitamin_reminder_notification_ids',
+};
+
+// Check if running in Expo Go
+const isExpoGo = 
+  Constants.appOwnership === 'expo' || 
+  Constants.executionEnvironment === 'storeClient';
+
+let _notifications: any = null;
+let _notificationsAvailable = true;
+
+export const getNotifications = () => {
+  if (_notifications !== null || !_notificationsAvailable) {
+    return _notifications;
+  }
+  
+  try {
+    _notifications = require('expo-notifications');
+    
+    // Setup notification handler - MUST enable sound and alert
+    _notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+        priority: 'high',
+      }),
+    });
+    
+    console.log('[Notifications] Module initialized successfully');
+    return _notifications;
+  } catch (error) {
+    console.log('[Notifications] Module not available:', error);
+    _notificationsAvailable = false;
+    return null;
+  }
+};
+
+// Check if notifications are fully supported
+export const areNotificationsSupported = (): boolean => {
+  // Expo Go on Android doesn't support push notifications properly
+  if (isExpoGo && Platform.OS === 'android') {
+    return false;
+  }
+  return _notificationsAvailable && getNotifications() !== null;
+};
+
+// Show warning for Expo Go users
+export const showExpoGoWarning = () => {
+  if (isExpoGo && Platform.OS === 'android') {
+    Alert.alert(
+      'Bildirim Uyarısı',
+      'Expo Go uygulamasında bildirimler sınırlı çalışır. Tam bildirim desteği için uygulamanın yayınlanmış versiyonunu kullanın.',
+      [{ text: 'Tamam', style: 'default' }]
+    );
+    return true;
+  }
+  return false;
+};
+
+export const requestNotificationPermission = async (): Promise<boolean> => {
+  // Check if supported first
+  if (!areNotificationsSupported()) {
+    if (__DEV__) {
+      console.log('[Notifications] Not supported in this environment');
+    }
+    return false;
+  }
+
+  const Notifications = getNotifications();
+  if (!Notifications) return false;
+
+  try {
+    const currentPermissions = await Notifications.getPermissionsAsync();
+    let status = currentPermissions.status;
+
+    if (status !== 'granted') {
+      const permissionResponse = await Notifications.requestPermissionsAsync();
+      status = permissionResponse.status;
+    }
+
+    if (status !== 'granted') {
+      return false;
+    }
+
+    await ensureAndroidChannel();
+    return true;
+  } catch (error) {
+    if (__DEV__) {
+      console.log('[Notifications] Permission request error:', error);
+    }
+    return false;
+  }
+};
+
+export const ensureAndroidChannel = async () => {
+  if (!areNotificationsSupported()) return;
+  
+  const Notifications = getNotifications();
+  if (!Notifications) return;
+
+  if (Platform.OS === 'android') {
+    try {
+      await Notifications.setNotificationChannelAsync(REMINDER_CHANNEL_ID, {
+        name: 'Diet Reminders',
+        description: 'Su ve vitamin hatırlatıcıları',
+        importance: Notifications.AndroidImportance?.MAX || 5, // MAX importance for sound
+        sound: 'default',
+        enableVibrate: true,
+        vibrationPattern: [0, 250, 250, 250],
+        enableLights: true,
+        lightColor: '#4CAF50',
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility?.PUBLIC || 1,
+        bypassDnd: false,
+      });
+      console.log('[Notifications] Android channel created/updated');
+    } catch (error) {
+      console.log('[Notifications] Channel creation error:', error);
+    }
+  }
+};
+
+export const clearReminderNotifications = async (type: 'water' | 'vitamin') => {
+  if (!areNotificationsSupported()) return;
+  
+  const Notifications = getNotifications();
+  if (!Notifications) return;
+
+  try {
+    const storedIds = await AsyncStorage.getItem(REMINDER_NOTIFICATION_KEYS[type]);
+    if (storedIds) {
+      const ids: string[] = JSON.parse(storedIds);
+      await Promise.all(
+        ids.map(id => 
+          Notifications.cancelScheduledNotificationAsync(id).catch(() => undefined)
+        )
+      );
+    }
+    await AsyncStorage.removeItem(REMINDER_NOTIFICATION_KEYS[type]);
+  } catch (error) {
+    if (__DEV__) {
+      console.log('[Notifications] Clear error:', error);
+    }
+  }
+};
+
+interface ScheduleReminderOptions {
+  type: 'water' | 'vitamin';
+  enabled: boolean;
+  times: string[];
+  content: {
+    title: string;
+    body: string;
+    sound?: string | boolean;
+  };
+}
+
+export const syncReminderNotifications = async ({ type, enabled, times, content }: ScheduleReminderOptions) => {
+  // Check if supported
+  if (!areNotificationsSupported()) {
+    // Show warning only once when user tries to enable
+    if (enabled && isExpoGo && Platform.OS === 'android') {
+      showExpoGoWarning();
+    }
+    return;
+  }
+
+  const Notifications = getNotifications();
+  if (!Notifications) return;
+
+  try {
+    // Always clear previously scheduled notifications for this type
+    await clearReminderNotifications(type);
+
+    if (!enabled || !times.length) {
+      return;
+    }
+
+    await ensureAndroidChannel();
+
+    const ids: string[] = [];
+
+    for (const time of times) {
+      const [hour, minute] = time.split(':').map(Number);
+
+      if (!Number.isFinite(hour) || !Number.isFinite(minute)) continue;
+      if (hour < 0 || hour > 23 || minute < 0 || minute > 59) continue;
+
+      try {
+        // Create a promise with timeout to prevent hanging
+        const scheduleWithTimeout = async () => {
+          return new Promise<string | null>(async (resolve) => {
+            // Timeout after 5 seconds
+            const timeoutId = setTimeout(() => {
+              console.log(`[Notifications] Timeout scheduling ${time}`);
+              resolve(null);
+            }, 5000);
+
+            try {
+              // Simple trigger format that works in Expo Go
+              const id = await Notifications.scheduleNotificationAsync({
+                content: {
+                  title: content.title,
+                  body: content.body,
+                  sound: true,
+                },
+                trigger: {
+                  hour,
+                  minute,
+                  repeats: true,
+                },
+              });
+              clearTimeout(timeoutId);
+              resolve(id);
+            } catch (err) {
+              clearTimeout(timeoutId);
+              console.log('[Notifications] Schedule error:', err);
+              resolve(null);
+            }
+          });
+        };
+
+        const id = await scheduleWithTimeout();
+        if (id) {
+          ids.push(id);
+          console.log(`[Notifications] Scheduled ${type} reminder at ${time}, id: ${id}`);
+        }
+      } catch (scheduleError) {
+        console.log('[Notifications] Schedule error for', time, ':', scheduleError);
+      }
+    }
+
+    if (ids.length) {
+      await AsyncStorage.setItem(REMINDER_NOTIFICATION_KEYS[type], JSON.stringify(ids));
+      console.log(`[Notifications] Saved ${ids.length} notification IDs for ${type}`);
+    }
+  } catch (error) {
+    console.log('[Notifications] Sync error:', error);
+  }
+};
+
+// Get scheduled notifications count (for debugging)
+export const getScheduledCount = async (): Promise<number> => {
+  if (!areNotificationsSupported()) return 0;
+  
+  const Notifications = getNotifications();
+  if (!Notifications) return 0;
+
+  try {
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    return scheduled.length;
+  } catch {
+    return 0;
+  }
+};
+
+// Send immediate test notification (for debugging)
+export const sendTestNotification = async (title: string, body: string): Promise<boolean> => {
+  if (!areNotificationsSupported()) {
+    Alert.alert('Bildirim Hatası', 'Bildirimler bu ortamda desteklenmiyor.');
+    return false;
+  }
+  
+  const Notifications = getNotifications();
+  if (!Notifications) return false;
+
+  try {
+    await ensureAndroidChannel();
+    
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title,
+        body,
+        sound: true,
+        priority: 'high',
+      },
+      trigger: null, // Immediate notification
+    });
+    
+    console.log('[Notifications] Test notification sent');
+    return true;
+  } catch (error) {
+    console.log('[Notifications] Test notification error:', error);
+    return false;
+  }
+};
+
+// Get all scheduled notifications (for debugging)
+export const getScheduledNotifications = async (): Promise<any[]> => {
+  if (!areNotificationsSupported()) return [];
+  
+  const Notifications = getNotifications();
+  if (!Notifications) return [];
+
+  try {
+    return await Notifications.getAllScheduledNotificationsAsync();
+  } catch {
+    return [];
+  }
+};
