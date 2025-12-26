@@ -110,10 +110,10 @@ export default function OnboardingScreen() {
   const [checkingLang, setCheckingLang] = useState(true);
   
   const [formData, setFormData] = useState({
-    height: '',
-    weight: '',
+    height: '170',
+    weight: '70',
     targetWeight: '',
-    age: '',
+    age: '25',
     gender: 'male',
     activity_level: 'moderate',
     goal: 'maintain',
