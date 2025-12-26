@@ -493,91 +493,106 @@ export default function OnboardingScreen() {
     );
   }
 
-  // Height Step
+  // Height Step - Enhanced with AdvancedRulerPicker
   if (step === 'height') {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.stepContainer}>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${getStepProgress() * 100}%` }]} />
-          </View>
-          
-          <TouchableOpacity style={styles.backBtn} onPress={goToPrevStep}>
-            <Text style={styles.backBtnText}>←</Text>
-          </TouchableOpacity>
-          
-          <View style={styles.stepContent}>
-            <Text style={styles.stepEmoji}>📏</Text>
-            <Text style={styles.stepTitle}>{t('whatIsYourHeight')}</Text>
-            <Text style={styles.stepSubtitle}>{t('heightHelpsCalculate')}</Text>
+        <ScrollView 
+          style={{ flex: 1 }} 
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.stepContainer}>
+            <View style={styles.progressBar}>
+              <View style={[styles.progressFill, { width: `${getStepProgress() * 100}%` }]} />
+            </View>
             
-            <View style={styles.rulerPickerContainer}>
-              <RulerPicker
+            <TouchableOpacity style={styles.backBtn} onPress={goToPrevStep}>
+              <Text style={styles.backBtnText}>←</Text>
+            </TouchableOpacity>
+            
+            <View style={styles.advancedPickerHeader}>
+              <Text style={styles.stepEmoji}>📏</Text>
+              <Text style={styles.stepTitle}>{t('whatIsYourHeight')}</Text>
+              <Text style={styles.stepSubtitle}>{t('heightHelpsCalculate')}</Text>
+            </View>
+            
+            <View style={styles.advancedRulerContainer}>
+              <AdvancedRulerPicker
                 min={100}
                 max={250}
                 step={1}
                 initialValue={parseInt(formData.height) || 170}
                 unit="cm"
                 onValueChange={(value) => setFormData({ ...formData, height: value.toString() })}
-                height={350}
+                height={280}
+                primaryColor={Colors.primary}
+                decimalPlaces={0}
               />
             </View>
+            
+            <TouchableOpacity 
+              style={[styles.continueBtn, !formData.height && styles.continueBtnDisabled]} 
+              onPress={goToNextStep}
+              disabled={!formData.height}
+            >
+              <LinearGradient colors={formData.height ? [Colors.primary, '#45a049'] : ['#ccc', '#aaa']} style={styles.gradientBtn}>
+                <Text style={styles.continueBtnText}>{t('continue')}</Text>
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
-          
-          <TouchableOpacity 
-            style={[styles.continueBtn, !formData.height && styles.continueBtnDisabled]} 
-            onPress={goToNextStep}
-            disabled={!formData.height}
-          >
-            <LinearGradient colors={formData.height ? [Colors.primary, '#45a049'] : ['#ccc', '#aaa']} style={styles.gradientBtn}>
-              <Text style={styles.continueBtnText}>{t('continue')}</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
 
-  // Weight Step
+  // Weight Step - Enhanced with AdvancedRulerPicker
   if (step === 'weight') {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.stepContainer}>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${getStepProgress() * 100}%` }]} />
-          </View>
-          
-          <TouchableOpacity style={styles.backBtn} onPress={goToPrevStep}>
-            <Text style={styles.backBtnText}>←</Text>
-          </TouchableOpacity>
-          
-          <View style={styles.stepContent}>
-            <Text style={styles.stepEmoji}>⚖️</Text>
-            <Text style={styles.stepTitle}>{t('whatIsYourWeight')}</Text>
-            <Text style={styles.stepSubtitle}>{t('currentWeightHelps')}</Text>
+        <ScrollView 
+          style={{ flex: 1 }} 
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.stepContainer}>
+            <View style={styles.progressBar}>
+              <View style={[styles.progressFill, { width: `${getStepProgress() * 100}%` }]} />
+            </View>
             
-            <View style={styles.rulerPickerContainer}>
-              <RulerPicker
+            <TouchableOpacity style={styles.backBtn} onPress={goToPrevStep}>
+              <Text style={styles.backBtnText}>←</Text>
+            </TouchableOpacity>
+            
+            <View style={styles.advancedPickerHeader}>
+              <Text style={styles.stepEmoji}>⚖️</Text>
+              <Text style={styles.stepTitle}>{t('whatIsYourWeight')}</Text>
+              <Text style={styles.stepSubtitle}>{t('currentWeightHelps')}</Text>
+            </View>
+            
+            <View style={styles.advancedRulerContainer}>
+              <AdvancedRulerPicker
                 min={30}
                 max={200}
                 step={0.5}
                 initialValue={parseFloat(formData.weight) || 70}
                 unit="kg"
                 onValueChange={(value) => setFormData({ ...formData, weight: value.toString() })}
-                height={350}
+                height={280}
+                primaryColor="#FF9800"
+                decimalPlaces={1}
               />
             </View>
-          </View>
-          
-          <TouchableOpacity 
-            style={[styles.continueBtn, !formData.weight && styles.continueBtnDisabled]} 
-            onPress={goToNextStep}
-            disabled={!formData.weight}
-          >
-            <LinearGradient colors={formData.weight ? [Colors.primary, '#45a049'] : ['#ccc', '#aaa']} style={styles.gradientBtn}>
-              <Text style={styles.continueBtnText}>{t('continue')}</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.continueBtn, !formData.weight && styles.continueBtnDisabled]} 
+              onPress={goToNextStep}
+              disabled={!formData.weight}
+            >
+              <LinearGradient colors={formData.weight ? [Colors.primary, '#45a049'] : ['#ccc', '#aaa']} style={styles.gradientBtn}>
+                <Text style={styles.continueBtnText}>{t('continue')}</Text>
+              </LinearGradient>
+            </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
