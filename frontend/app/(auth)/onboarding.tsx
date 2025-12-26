@@ -450,11 +450,15 @@ export default function OnboardingScreen() {
     );
   }
 
-  // Age Step
+  // Age Step - Enhanced with AgeWheelPicker
   if (step === 'age') {
     return (
       <SafeAreaView style={styles.container}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+        <ScrollView 
+          style={{ flex: 1 }} 
+          contentContainerStyle={{ flexGrow: 1 }}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.stepContainer}>
             <View style={styles.progressBar}>
               <View style={[styles.progressFill, { width: `${getStepProgress() * 100}%` }]} />
@@ -464,23 +468,14 @@ export default function OnboardingScreen() {
               <Text style={styles.backBtnText}>←</Text>
             </TouchableOpacity>
             
-            <View style={styles.stepContent}>
-              <Text style={styles.stepEmoji}>🎂</Text>
-              <Text style={styles.stepTitle}>{t('howOldAreYou')}</Text>
-              <Text style={styles.stepSubtitle}>{t('ageHelpsCalculate')}</Text>
-              
-              <View style={styles.inputContainer}>
-                <TextInput
-                  style={styles.bigInput}
-                  keyboardType="numeric"
-                  placeholder="25"
-                  placeholderTextColor={Colors.lightText}
-                  value={formData.age}
-                  onChangeText={(text) => setFormData({ ...formData, age: text.replace(/[^0-9]/g, '') })}
-                  maxLength={3}
-                />
-                <Text style={styles.inputUnit}>{t('yearsOld')}</Text>
-              </View>
+            <View style={styles.agePickerContainer}>
+              <AgeWheelPicker
+                minAge={10}
+                maxAge={100}
+                initialAge={parseInt(formData.age) || 25}
+                onAgeChange={(age) => setFormData({ ...formData, age: age.toString() })}
+                primaryColor={Colors.primary}
+              />
             </View>
             
             <TouchableOpacity 
@@ -493,7 +488,7 @@ export default function OnboardingScreen() {
               </LinearGradient>
             </TouchableOpacity>
           </View>
-        </KeyboardAvoidingView>
+        </ScrollView>
       </SafeAreaView>
     );
   }
