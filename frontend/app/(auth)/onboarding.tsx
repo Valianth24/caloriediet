@@ -505,7 +505,7 @@ export default function OnboardingScreen() {
       <SafeAreaView style={styles.container}>
         <ScrollView 
           style={{ flex: 1 }} 
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.stepContainer}>
@@ -524,16 +524,15 @@ export default function OnboardingScreen() {
             </View>
             
             <View style={styles.advancedRulerContainer}>
-              <AdvancedRulerPicker
+              <EnhancedRulerPicker
                 min={100}
                 max={250}
                 step={1}
                 initialValue={parseInt(formData.height) || 170}
                 unit="cm"
                 onValueChange={(value) => setFormData({ ...formData, height: value.toString() })}
-                height={280}
+                height={260}
                 primaryColor={Colors.primary}
-                decimalPlaces={0}
               />
             </View>
             
@@ -552,13 +551,13 @@ export default function OnboardingScreen() {
     );
   }
 
-  // Weight Step - Enhanced with AdvancedRulerPicker
+  // Weight Step - Enhanced with EnhancedRulerPicker
   if (step === 'weight') {
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView 
           style={{ flex: 1 }} 
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.stepContainer}>
@@ -577,16 +576,15 @@ export default function OnboardingScreen() {
             </View>
             
             <View style={styles.advancedRulerContainer}>
-              <AdvancedRulerPicker
+              <EnhancedRulerPicker
                 min={30}
                 max={200}
                 step={0.5}
                 initialValue={parseFloat(formData.weight) || 70}
                 unit="kg"
                 onValueChange={(value) => setFormData({ ...formData, weight: value.toString() })}
-                height={280}
+                height={260}
                 primaryColor="#FF9800"
-                decimalPlaces={1}
               />
             </View>
             
